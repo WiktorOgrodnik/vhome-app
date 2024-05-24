@@ -22,7 +22,7 @@ class Auth {
 
   void _checkAuthStatus() async {
     // Simulate a delay for checking auth status
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(milliseconds: 50));
     // This is where you would check if the user is authenticated
     // For demonstration, let's assume the user is unauthenticated
     _authStateController.add(AuthState.unauthenticated);

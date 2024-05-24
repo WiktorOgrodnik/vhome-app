@@ -1,18 +1,17 @@
 import 'dart:convert';
-import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vhome_frontend/auth.dart';
 import 'package:vhome_frontend/views/login.dart';
+import 'package:vhome_frontend/views/taskset.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 Future<Message> fetchMessage() async {
-
   final response = await http
     .get(Uri.parse('http://localhost:8080/'));
 
@@ -42,57 +41,6 @@ class Message {
     };
   }
 }
-
-Future<List<VList>> fetchVlists() async {
-
-  var sessionSid = await SessionManager().get('session.sid');
-
-  print(sessionSid);
-
-  final response = await http
-    .get(Uri.parse('http://localhost:8080/lists'), headers: {'cookie': sessionSid });
-  
-  List<VList> tempList = [];
-
-  if (response.statusCode == 200) {
-    var data = jsonDecode(response.body);
-    for (var v in data) {
-      tempList.add(VList.fromJson(v));
-    }
-    return tempList;
-  } else {
-    throw Exception('Failed to load message.');
-  }
-}
-
-class VList {
-  final int id;
-  final int groupId;
-  final String title;
-
-  const VList({
-    required this.id,
-    required this.groupId,
-    required this.title,
-  });
-
-  factory VList.fromJson(Map<String, dynamic> json) {
-    return switch (json) {
-      {
-        'id': int id,
-        'group_id': int groupId,
-        'name': String title,
-      } => 
-        VList (
-          id: id,
-          groupId: groupId,
-          title: title,
-        ),
-      _ => throw const FormatException('Failed to load list'),
-    };
-  }
-}
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -138,6 +86,7 @@ class AuthGuard extends StatelessWidget {
         }
         switch (snapshot.data) {
           case AuthState.unauthenticated:
+            print("login screen");
             return LoginScreen();
           case AuthState.authenticated:
             return HomePage();
@@ -192,7 +141,7 @@ class HomePageState extends State<HomePage> {
     Widget page;
     switch (selectedIndex) {
       case 0:
-        page = ApiPage();
+        page = TaskSetView();
       case 1:
         page = Placeholder();
       case 2:
@@ -238,61 +187,25 @@ class HomePageState extends State<HomePage> {
   }
 }
 
-class ApiPage extends StatefulWidget {
-  @override
-    State<StatefulWidget> createState() => ApiPageState();
-}
-
-class ApiPageState extends State<ApiPage> {
-  
-  late Future<List<VList>> futureLists;
-
-  @override
-  void initState() {
-    super.initState();
-    futureLists = fetchVlists();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<List<VList>>(
-      future: futureLists,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return Column(
-            children: [
-              for (var vlist in snapshot.data!)
-                Column(
-                  children: [
-                    SizedBox(width: 10),
-                    Text(vlist.title),
-                  ],
-                )
-            ],
-          );
-        } else {
-          return Placeholder();
-        }
-      } 
-    );
-  }
-}
 
 class LogOutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        children: [
-          SizedBox(height: 25),
-          ElevatedButton(
-            onPressed: () {
-              Auth().logout();
-            },
-            child: Text("Logout"),
-          ),
-        ],
-      )
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20), 
+        child: Column(
+          children: [
+            SizedBox(height: 25),
+            ElevatedButton(
+              onPressed: () {
+                Auth().logout();
+              },
+              child: Text("Logout"),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
