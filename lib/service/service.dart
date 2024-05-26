@@ -21,9 +21,14 @@ class Service {
     return data;
   }
 
-  static Future<List<dynamic>> getDataList(String target) async {
-    var res = await getData(target);
-    return res as List<dynamic>;
+  static Future<List<dynamic>> getDataList(String target, {int? limit}) async {
+    var res = await getData(target) as List<dynamic>;
+    
+    if (limit != null) {
+      res = res.take(limit).toList();
+    }
+
+    return res;
   }
 }
 

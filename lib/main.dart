@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
         title: 'vHome',
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
         ),
         home: MainContainer(),
       ),
@@ -66,10 +66,17 @@ class MyAppState extends ChangeNotifier {
 }
 
 class MainContainer extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: theme.colorScheme.surface,
+      appBar: AppBar(
+        backgroundColor: theme.colorScheme.surfaceContainer,
+        title: const Text("vHome"),
+      ),
       body: AuthGuard(),
     );
   }
@@ -137,11 +144,13 @@ class HomePageState extends State<HomePage> {
   
   @override
   Widget build(BuildContext context) {
+
+    final theme = Theme.of(context);
     
     Widget page;
     switch (selectedIndex) {
       case 0:
-        page = TaskSetView();
+        page = TaskSetsView();
       case 1:
         page = Placeholder();
       case 2:
@@ -152,36 +161,70 @@ class HomePageState extends State<HomePage> {
     
     return LayoutBuilder(
       builder: (context, constraints) {
-        return Row(
-          children: [
-            SafeArea(
-              child: NavigationRail(
-                extended: constraints.maxWidth >= 600,
-                destinations: [
-                  NavigationRailDestination(
-                    icon: Icon(Icons.home),
-                    label: Text("Home"),
-                  ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.devices),
-                    label: Text("Devices"),
-                  ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.exit_to_app),
-                    label: Text("Logout"),
-                  ),
-                ],
-                selectedIndex: selectedIndex,
-                onDestinationSelected: (value) {
-                  setState(() {
-                    selectedIndex = value;
-                  });
-                }
+        if (constraints.maxWidth < 500) {
+          return Column(
+            children: [
+              Expanded(child: page),
+              SafeArea(
+                child: BottomNavigationBar(
+                  items: [
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.home),
+                      label: "Home",
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.devices),
+                      label: "Devices",
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.exit_to_app),
+                      label: "Logout",
+                    ),
+                  ],
+                  currentIndex: selectedIndex,
+                  onTap: (value) {
+                    setState(() {
+                      selectedIndex = value;
+                    });
+                  },
+                )
+              )
+            ],
+          );
+        } else {
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SafeArea(
+                child: NavigationRail(
+                  extended: constraints.maxWidth >= 1150,
+                  backgroundColor: theme.colorScheme.surfaceContainer,
+                  destinations: [
+                    NavigationRailDestination(
+                      icon: Icon(Icons.home),
+                      label: Text("Home"),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.devices),
+                      label: Text("Devices"),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.exit_to_app),
+                      label: Text("Logout"),
+                    ),
+                  ],
+                  selectedIndex: selectedIndex,
+                  onDestinationSelected: (value) {
+                    setState(() {
+                      selectedIndex = value;
+                    });
+                  }
+                ),
               ),
-            ),
-            page,
-          ],
-        );
+              Expanded(child: page),
+            ],
+          );
+        }
       }
     );
   }
