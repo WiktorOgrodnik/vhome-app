@@ -13,7 +13,7 @@ class TaskSetService extends Service {
   Stream<TaskSet> get taskSetsOutdated$ => _taskSetController.stream;
 
   Future<List<TaskSet>> getTaskSets() async {
-    var data = await Service.getDataList("lists");
+    var data = await Service.getDataList("tasksets");
     return data.map((x) => TaskSet.fromJson(x)).toList();
   }
 }

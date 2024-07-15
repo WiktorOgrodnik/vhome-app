@@ -7,6 +7,7 @@ import 'package:vhome_frontend/auth.dart';
 import 'package:vhome_frontend/components/buttons.dart';
 import 'package:vhome_frontend/components/fields.dart';
 import 'package:vhome_frontend/consts/api_url.dart';
+import 'package:vhome_frontend/models/user.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -38,36 +39,39 @@ class LoginFormState extends State<LoginForm> {
   void onPressed() async {
     if (_formKey.currentState!.validate()) {
       var response = await post(
-        Uri.parse("$apiUrl/authenticate"),
+        Uri.parse("$apiUrl/login"),
         body: jsonEncode({
-          'login': username.text,
-          'passwd': password.text}),
+          'username': username.text,
+          'password': password.text,
+        }),
+        headers: {
+          "Accept": "application/json",
+          "content-type":"application/json"
+        },
       );
 
-      if (response.statusCode == 200 && response.headers.containsKey('set-cookie') && response.body.startsWith("Logged user:")) {
-        var cookie = response.headers['set-cookie']!;
-        
-        if (cookie.contains("tide.sid")) {
-          await SessionManager()
-            .set("session.sid", cookie);
+      if (response.statusCode == 200) {
+        var user = User.fromJson(jsonDecode(response.body));
+        var token = user.token;
 
-          scafforMessage("User logged in! Msg: ${response.body}");
+        await SessionManager().set("user.token", token);
 
-          var response2 = await post(
-            Uri.parse("$apiUrl/setgroup/1"),
-            headers: {
-              "cookie": cookie, 
-            },
-          );
+        scafforMessage("User logged in! Msg: ${response.body}");
 
-          if (response2.statusCode != 200) {
-            print(response2.statusCode);
-            scafforMessage("Set group failed!");
-          }
+        var response2 = await get(
+          Uri.parse("$apiUrl/group/select/1"),
+          headers: {
+            "Authorization": token, 
+          },
+        );
 
-          await Auth().login(username.text, password.text);
+        if (response2.statusCode != 200) {
+          scafforMessage("Set group failed!");
         } else {
-          scafforMessage("Session error!");
+          var user = User.fromJson(jsonDecode(response2.body));
+          var token = user.token;
+          await SessionManager().set("user.token", token);
+          await Auth().login(username.text, password.text);
         }
       } else {
         scafforMessage("User unauthorized!");

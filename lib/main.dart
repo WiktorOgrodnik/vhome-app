@@ -93,7 +93,6 @@ class AuthGuard extends StatelessWidget {
         }
         switch (snapshot.data) {
           case AuthState.unauthenticated:
-            print("login screen");
             return LoginScreen();
           case AuthState.authenticated:
             return HomePage();

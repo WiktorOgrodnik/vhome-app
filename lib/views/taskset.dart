@@ -56,7 +56,6 @@ class TaskSetViewState extends State<TaskSetView> {
                               task: snapshot.data![index],
                               editable: true,
                               refreshTaskSet: () {
-                                print("Refreshing");
                                 setState(() {
                                   futureTasks = TaskService().getTasks(widget.taskSet.id);
                                 });
@@ -175,8 +174,6 @@ class TaskTileState extends State<TaskTile> {
     TaskTileDetails taskTileDetails = TaskTileDetails(
       taskSetId: taskSetId,
     );
-
- 
 
     return Material(
       elevation: 4,

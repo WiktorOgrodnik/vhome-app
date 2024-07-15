@@ -18,28 +18,39 @@ class TaskService {
   }
 
   Future<int> changeCompleted(bool val, int taskId) async {
-    var uri = Uri.parse("$apiUrl/task/completed/$taskId/$val");
-    var sid = await SessionManager().get('session.sid');
-    var response = await http.put(uri, headers: {'cookie': sid} );
+    var uri = val ? 
+      Uri.parse("$apiUrl/task/$taskId/completed") :
+      Uri.parse("$apiUrl/task/$taskId/uncompleted");
+
+    var token = await SessionManager().get('user.token');
+    var response = await http.put(uri, headers: {'Authorization': token} );
 
     return response.statusCode;
   }
 
   Future<int> add(int taskSetId, String title, String content) async {
-    var uri = Uri.parse("$apiUrl/tasks/$taskSetId");
-    var sid = await SessionManager().get('session.sid');
-    var payload = jsonEncode({ "title": title, "content": content });
+    var uri = Uri.parse("$apiUrl/tasks");
+    var token = await SessionManager().get('user.token');
+    var payload = jsonEncode({ "taskset_id": taskSetId, "title": title, "content": content });
 
-    var response = await http.post(uri, headers: {'cookie': sid}, body: payload);
+    var response = await http.post(
+      uri,
+      headers: {
+        'Authorization': token,
+        'Accept': 'application/json',
+        'content-type': 'application/json',
+      },
+      body: payload
+    );
 
     return response.statusCode;
   }
 
   Future<int> delete(int taskId) async {
     var uri = Uri.parse("$apiUrl/task/$taskId");
-    var sid = await SessionManager().get('session.sid');
+    var token = await SessionManager().get('user.token');
 
-    var response = await http.delete(uri, headers: {'cookie': sid});
+    var response = await http.delete(uri, headers: {'Authorization': token});
 
     return response.statusCode;
   }

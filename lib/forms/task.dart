@@ -13,8 +13,7 @@ class AddTask extends StatelessWidget {
   });
 
   void add() async {
-    var request = await TaskService().add(taskSet.id, titleController.text, contentController.text);
-    print(request);
+    await TaskService().add(taskSet.id, titleController.text, contentController.text);
   }
 
   @override

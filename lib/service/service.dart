@@ -10,9 +10,9 @@ class Service {
 
   static Future<dynamic> getData(String target) async {
     var uri = Uri.parse("$apiUrl/$target");
-    var sid = await SessionManager().get('session.sid');
-    var response = await http.get(uri, headers: {'cookie': sid} );
-    var data = jsonDecode(response.body);
+    var token = await SessionManager().get('user.token');
+    var response = await http.get(uri, headers: {'Authorization': token} );
+    var data = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode != HttpStatus.ok) {
       throw data["content"];    
