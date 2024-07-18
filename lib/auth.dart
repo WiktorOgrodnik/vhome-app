@@ -55,7 +55,24 @@ class Auth {
     _authStateController.add(AuthState.groupSelected);
   }
 
+  Future<void> unselectGroup() async {
+    _authStateController.add(AuthState.pending);
+    var user = await UserService().unselectGroup();
+    if (user == null) {
+      _authStateController.add(AuthState.unauthenticated);
+      return;
+    }
+    
+    await SessionManager().set("user.token", user.token);
+
+    _authStateController.add(AuthState.groupUnselected);
+  }
+
+
   Future<void> logout() async {
+    _authStateController.add(AuthState.pending);
+    await UserService().logout();
+    await SessionManager().remove("user.token");
     _authStateController.add(AuthState.unauthenticated);
   }
 

@@ -4,9 +4,11 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vhome_frontend/auth.dart';
+import 'package:vhome_frontend/service/taskset.dart';
 import 'package:vhome_frontend/views/groups.dart';
 import 'package:vhome_frontend/views/login.dart';
 import 'package:vhome_frontend/views/taskset.dart';
+import 'package:vhome_frontend/views/tasksets.dart';
 
 void main() {
   runApp(const MyApp());
@@ -48,22 +50,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => MyAppState(),
-      child: MaterialApp(
-        title: 'vHome',
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
-        ),
-        home: MainContainer(),
+    return MaterialApp(
+      title: 'vHome',
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
       ),
+      home: MainContainer(),
     );
   }
-}
-
-class MyAppState extends ChangeNotifier {
-  var current = "";
 }
 
 class MainContainer extends StatelessWidget {
@@ -152,7 +147,10 @@ class HomePageState extends State<HomePage> {
     Widget page;
     switch (selectedIndex) {
       case 0:
-        page = TaskSetsView();
+        page = ChangeNotifierProvider(
+          create: (_) => TaskSetService(),
+          child: TaskSetsPage()
+        );
       case 1:
         page = Placeholder();
       case 2:
@@ -241,6 +239,13 @@ class LogOutPage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20), 
         child: Column(
           children: [
+            SizedBox(height: 25),
+            ElevatedButton(
+              onPressed: () {
+                Auth().unselectGroup();
+              },
+              child: Text("Change group"),
+            ),
             SizedBox(height: 25),
             ElevatedButton(
               onPressed: () {

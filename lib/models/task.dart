@@ -1,35 +1,24 @@
-class Task {
-  final int id;
-  final String title;
-  final String content;
-  final bool completed;
-  // final DateTime? completedTime;
+import 'package:flutter/foundation.dart';
 
-  const Task({
+class Task with ChangeNotifier {
+  int id;
+  String title;
+  String content;
+  bool completed;
+
+  Task({
     required this.id,
     required this.title,
     required this.content,
-    required this.completed,
-    // required this.completedTime,
+    required this.completed
   });
 
   factory Task.fromJson(Map<String, dynamic> json) {
-    return switch (json) {
-      {
-        'id': int id,
-        'title': String title,
-        'content': String content,
-        'completed': bool completed,
-        //'completedTime': String completedTime,
-      } => 
-        Task (
-          id: id,
-          title: title,
-          content: content,
-          completed: completed,
-          //completedTime: DateTime.tryParse(completedTime),
-        ),
-      _ => throw const FormatException('Failed to load Task from Json'),
-    };
+    return Task(
+      id: json['id'],
+      title: json['title'],
+      content: json['content'],
+      completed: json['completed'],
+    );
   }
 }

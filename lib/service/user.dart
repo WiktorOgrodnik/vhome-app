@@ -40,10 +40,21 @@ class UserService {
       null;
   }
 
-  Future<int> logout(int taskId) async {
+  Future<User?> unselectGroup() async {
+    var uri = Uri.parse("$apiUrl/group/unselect");
+    var token = await SessionManager().get('user.token');
+
+    var response = await get(uri, headers: { 'Authorization': token });
+
+    return response.statusCode == 200 ?
+      User.fromJson(jsonDecode(response.body)) :
+      null;
+  }
+
+  Future<void> logout() async {
     var uri = Uri.parse("$apiUrl/logout");
     var token = await SessionManager().get('user.token');
 
-    return 200;
+    await get(uri, headers: { 'Authorization': token });
   }
 }

@@ -1,24 +1,19 @@
-class TaskSet {
-  final int id;
-  final String title;
+import 'package:flutter/foundation.dart';
 
-  const TaskSet({
+class TaskSet with ChangeNotifier {
+  int id;
+  String title;
+
+  TaskSet({
     required this.id,
     required this.title,
   });
 
   factory TaskSet.fromJson(Map<String, dynamic> json) {
-    return switch (json) {
-      {
-        'id': int id,
-        'name': String title,
-      } => 
-        TaskSet (
-          id: id,
-          title: title,
-        ),
-      _ => throw const FormatException('Failed to load TaskSet from Json'),
-    };
+    return TaskSet (
+      id: json['id'],
+      title: json['name'],
+    );
   }
 }
 

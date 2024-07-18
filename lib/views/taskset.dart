@@ -3,7 +3,6 @@ import 'package:vhome_frontend/forms/task.dart';
 import 'package:vhome_frontend/models/task.dart';
 import 'package:vhome_frontend/models/taskset.dart';
 import 'package:vhome_frontend/service/task.dart';
-import 'package:vhome_frontend/service/taskset.dart';
 import 'package:vhome_frontend/views/task.dart';
 
 class TaskSetView extends StatefulWidget {
@@ -97,6 +96,7 @@ class TaskSetViewState extends State<TaskSetView> {
     );
   }
 }
+
 class TaskTileDetails extends StatefulWidget {
   final int taskSetId;
 
@@ -240,45 +240,3 @@ class TaskTileState extends State<TaskTile> {
     );
   }
 }
-
-class TaskSetsView extends StatefulWidget {
-  @override
-    State<StatefulWidget> createState() => TaskSetsViewState();
-}
-
-class TaskSetsViewState extends State<TaskSetsView> {
-  
-  late Future<List<TaskSet>> futureLists;
-
-  @override
-  void initState() {
-    super.initState();
-    futureLists = TaskSetService().getTaskSets();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: FutureBuilder<List<TaskSet>>(
-        future: futureLists,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return Wrap(
-              children: [
-                for (var taskSet in snapshot.data!)
-                Padding(
-                  padding: EdgeInsets.all(20),
-                  child: TaskTile(taskSet: taskSet),
-                )
-              ],
-            );
-          } else {
-            return Placeholder();
-          }
-        },
-      ),
-    ); 
-  }
-}
-
