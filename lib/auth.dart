@@ -1,44 +1,61 @@
 import 'dart:async';
 
+import 'package:flutter_session_manager/flutter_session_manager.dart';
+import 'package:vhome_frontend/service/group.dart';
+import 'package:vhome_frontend/service/user.dart';
+
 enum AuthState {
   pending,
   unauthenticated,
-  authenticated,
+  groupUnselected,
+  groupSelected,
 }
 
 class Auth {
   static final Auth _instance = Auth._internal();
   factory Auth() => _instance;
   Auth._internal() {
-    _authStateController.add(AuthState.unauthenticated); // Initial state
-    // Simulate an authentication check
+    _authStateController.add(AuthState.unauthenticated);
     _checkAuthStatus();
   }
 
   final _authStateController = StreamController<AuthState>.broadcast();
 
-  // Expose the stream
   Stream<AuthState> get authState$ => _authStateController.stream;
 
   void _checkAuthStatus() async {
-    // Simulate a delay for checking auth status
     await Future.delayed(Duration(milliseconds: 50));
-    // This is where you would check if the user is authenticated
-    // For demonstration, let's assume the user is unauthenticated
     _authStateController.add(AuthState.unauthenticated);
   }
 
-  Future<void> login(String username, String password) async {
+  Future<bool> login(String username, String password) async {
     _authStateController.add(AuthState.pending);
-    // Simulate a login delay
-    // Here, you would verify the username and password
-    // For demonstration, let's assume login is successful
-    _authStateController.add(AuthState.authenticated);
+    var user = await UserService().getAuthToken(username, password);
+    if (user == null) {
+      _authStateController.add(AuthState.unauthenticated);
+      return false;
+    }
+
+    await SessionManager().set("user.token", user.token);
+
+    _authStateController.add(AuthState.groupUnselected);
+    return true;
+  }
+
+  Future<void> selectGroup(int groupId) async {
+    _authStateController.add(AuthState.pending);
+    var user = await UserService().selectGroup(groupId);
+    if (user == null) {
+      _authStateController.add(AuthState.groupUnselected);
+      return;
+    }
+    
+    await SessionManager().set("user.token", user.token);
+
+    _authStateController.add(AuthState.groupSelected);
   }
 
   Future<void> logout() async {
-    // Simulate a logout delay
-    // After logging out, update the state
     _authStateController.add(AuthState.unauthenticated);
   }
 

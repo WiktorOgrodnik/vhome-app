@@ -6,8 +6,6 @@ import 'package:http/http.dart';
 import 'package:vhome_frontend/auth.dart';
 import 'package:vhome_frontend/components/buttons.dart';
 import 'package:vhome_frontend/components/fields.dart';
-import 'package:vhome_frontend/consts/api_url.dart';
-import 'package:vhome_frontend/models/user.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -38,44 +36,14 @@ class LoginFormState extends State<LoginForm> {
 
   void onPressed() async {
     if (_formKey.currentState!.validate()) {
-      var response = await post(
-        Uri.parse("$apiUrl/login"),
-        body: jsonEncode({
-          'username': username.text,
-          'password': password.text,
-        }),
-        headers: {
-          "Accept": "application/json",
-          "content-type":"application/json"
-        },
-      );
-
-      if (response.statusCode == 200) {
-        var user = User.fromJson(jsonDecode(response.body));
-        var token = user.token;
-
-        await SessionManager().set("user.token", token);
-
-        scafforMessage("User logged in! Msg: ${response.body}");
-
-        var response2 = await get(
-          Uri.parse("$apiUrl/group/select/1"),
-          headers: {
-            "Authorization": token, 
-          },
-        );
-
-        if (response2.statusCode != 200) {
-          scafforMessage("Set group failed!");
-        } else {
-          var user = User.fromJson(jsonDecode(response2.body));
-          var token = user.token;
-          await SessionManager().set("user.token", token);
-          await Auth().login(username.text, password.text);
-        }
-      } else {
+      var result = await Auth().login(username.text, password.text);
+        
+      if (!result) {
         scafforMessage("User unauthorized!");
       }
+
+    } else {
+      scafforMessage("User unauthorized!");
     }
   }
 

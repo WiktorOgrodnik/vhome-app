@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vhome_frontend/auth.dart';
+import 'package:vhome_frontend/views/groups.dart';
 import 'package:vhome_frontend/views/login.dart';
 import 'package:vhome_frontend/views/taskset.dart';
 
@@ -94,7 +95,9 @@ class AuthGuard extends StatelessWidget {
         switch (snapshot.data) {
           case AuthState.unauthenticated:
             return LoginScreen();
-          case AuthState.authenticated:
+          case AuthState.groupUnselected:
+            return GroupSelectionScreen();
+          case AuthState.groupSelected:
             return HomePage();
           default:
             return CircularProgressIndicator();
