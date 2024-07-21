@@ -1,11 +1,9 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_session_manager/flutter_session_manager.dart';
-import 'package:http/http.dart';
-import 'package:vhome_frontend/auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vhome_frontend/authenticate/authenticate.dart';
 import 'package:vhome_frontend/components/buttons.dart';
 import 'package:vhome_frontend/components/fields.dart';
+import 'package:vhome_repository/vhome_repository.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -34,9 +32,9 @@ class LoginFormState extends State<LoginForm> {
     );
   }
 
-  void onPressed() async {
+  void onPressed(VhomeRepository repository) async {
     if (_formKey.currentState!.validate()) {
-      var result = await Auth().login(username.text, password.text);
+      var result = await Auth().login(repository, username.text, password.text);
         
       if (!result) {
         scafforMessage("User unauthorized!");
@@ -49,6 +47,7 @@ class LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
+    final repository = context.read<VhomeRepository>();
     return Form(
       key: _formKey,
       child: Column(
@@ -71,7 +70,7 @@ class LoginFormState extends State<LoginForm> {
 
           const SizedBox(height: 25),
           ConfirmButton(
-            onPressed: onPressed,
+            onPressed: () => onPressed(repository)
           )
         ],
       ),

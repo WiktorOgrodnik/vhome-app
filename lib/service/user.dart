@@ -3,8 +3,8 @@ import 'dart:convert';
 
 import 'package:vhome_frontend/consts/api_url.dart';
 import 'package:vhome_frontend/models/user.dart';
-import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:http/http.dart';
+import 'package:vhome_repository/vhome_repository.dart';
 
 class UserService {
   static final UserService _instance = UserService._internal();
@@ -28,33 +28,33 @@ class UserService {
       User.fromJson(jsonDecode(response.body)) : 
       null;
   }
-
-  Future<User?> selectGroup(int groupId) async {
+  
+  Future<User?> selectGroup(VhomeRepository repository, int groupId) async {
     var uri = Uri.parse("$apiUrl/group/select/$groupId");
-    var token = await SessionManager().get('user.token');
+    var token = repository.getToken;
 
-    var response = await get(uri, headers: { 'Authorization': token });
+    var response = await get(uri, headers: { 'Authorization': token! });
 
     return response.statusCode == 200 ?
       User.fromJson(jsonDecode(response.body)) :
       null;
   }
 
-  Future<User?> unselectGroup() async {
+  Future<User?> unselectGroup(VhomeRepository repository) async {
     var uri = Uri.parse("$apiUrl/group/unselect");
-    var token = await SessionManager().get('user.token');
+    var token = repository.getToken;
 
-    var response = await get(uri, headers: { 'Authorization': token });
+    var response = await get(uri, headers: { 'Authorization': token! });
 
     return response.statusCode == 200 ?
       User.fromJson(jsonDecode(response.body)) :
       null;
   }
 
-  Future<void> logout() async {
+  Future<void> logout(VhomeRepository repository) async {
     var uri = Uri.parse("$apiUrl/logout");
-    var token = await SessionManager().get('user.token');
+    var token = repository.getToken;
 
-    await get(uri, headers: { 'Authorization': token });
+    await get(uri, headers: { 'Authorization': token! });
   }
 }

@@ -1,20 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:vhome_frontend/components/fields.dart';
-import 'package:vhome_frontend/models/taskset.dart';
-import 'package:vhome_frontend/service/task.dart';
+import 'package:vhome_web_api/vhome_web_api.dart';
 
 class AddTask extends StatelessWidget {
-  final TaskSet taskSet;
+  final Taskset taskSet;
   final titleController = TextEditingController();
   final contentController = TextEditingController();
 
   AddTask({
     required this.taskSet,
   });
-
-  void add() async {
-    await TaskService().add(taskSet.id, titleController.text, contentController.text);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +38,9 @@ class AddTask extends StatelessWidget {
               ),
               const SizedBox(height: 25),
               ElevatedButton(
-                onPressed: () async { add(); Navigator.pop(context, true); },
+                onPressed: () async { 
+                  Navigator.pop(context, true);
+                },
                 child: Text("Add"),
               ),
             ],

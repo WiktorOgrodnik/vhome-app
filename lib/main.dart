@@ -2,16 +2,18 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:vhome_frontend/auth.dart';
-import 'package:vhome_frontend/service/taskset.dart';
-import 'package:vhome_frontend/views/groups.dart';
-import 'package:vhome_frontend/views/login.dart';
-import 'package:vhome_frontend/views/taskset.dart';
-import 'package:vhome_frontend/views/tasksets.dart';
+import 'package:vhome_frontend/app/app.dart';
+import 'package:vhome_repository/vhome_repository.dart';
+import 'package:vhome_web_api/vhome_web_api.dart';
+
 
 void main() {
-  runApp(const MyApp());
+  TasksetApi tasksetApi = TasksetApi();
+  TaskApi taskApi = TaskApi();
+
+  VhomeRepository vhomeRepository = VhomeRepository(tasksetApi: tasksetApi, taskApi: taskApi);
+
+  runApp(App(repository: vhomeRepository));
 }
 
 Future<Message> fetchMessage() async {
@@ -45,63 +47,6 @@ class Message {
   }
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'vHome',
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
-      ),
-      home: MainContainer(),
-    );
-  }
-}
-
-class MainContainer extends StatelessWidget {
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.surfaceContainer,
-        title: const Text("vHome"),
-      ),
-      body: AuthGuard(),
-    );
-  }
-}
-
-class AuthGuard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<AuthState>(
-      stream: Auth().authState$,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData || snapshot.data == AuthState.pending) {
-          return Center(child: CircularProgressIndicator());
-        }
-        switch (snapshot.data) {
-          case AuthState.unauthenticated:
-            return LoginScreen();
-          case AuthState.groupUnselected:
-            return GroupSelectionScreen();
-          case AuthState.groupSelected:
-            return HomePage();
-          default:
-            return CircularProgressIndicator();
-        }
-      }
-    ); 
-  }
-}
-
 
 class BigCart extends StatelessWidget {
   const BigCart({
@@ -125,135 +70,6 @@ class BigCart extends StatelessWidget {
         child: Text(
           pair,
           style: style,
-        ),
-      ),
-    );
-  }
-}
-
-class HomePage extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => HomePageState();
-}
-
-class HomePageState extends State<HomePage> {
-  var selectedIndex = 0;
-  
-  @override
-  Widget build(BuildContext context) {
-
-    final theme = Theme.of(context);
-    
-    Widget page;
-    switch (selectedIndex) {
-      case 0:
-        page = ChangeNotifierProvider(
-          create: (_) => TaskSetService(),
-          child: TaskSetsPage()
-        );
-      case 1:
-        page = Placeholder();
-      case 2:
-        page = LogOutPage();
-      default:
-        throw UnimplementedError('no widget for $selectedIndex');
-    }
-    
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth < 500) {
-          return Column(
-            children: [
-              Expanded(child: page),
-              SafeArea(
-                child: BottomNavigationBar(
-                  items: [
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.home),
-                      label: "Home",
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.devices),
-                      label: "Devices",
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.exit_to_app),
-                      label: "Logout",
-                    ),
-                  ],
-                  currentIndex: selectedIndex,
-                  onTap: (value) {
-                    setState(() {
-                      selectedIndex = value;
-                    });
-                  },
-                )
-              )
-            ],
-          );
-        } else {
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SafeArea(
-                child: NavigationRail(
-                  extended: constraints.maxWidth >= 1150,
-                  backgroundColor: theme.colorScheme.surfaceContainer,
-                  destinations: [
-                    NavigationRailDestination(
-                      icon: Icon(Icons.home),
-                      label: Text("Home"),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.devices),
-                      label: Text("Devices"),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.exit_to_app),
-                      label: Text("Logout"),
-                    ),
-                  ],
-                  selectedIndex: selectedIndex,
-                  onDestinationSelected: (value) {
-                    setState(() {
-                      selectedIndex = value;
-                    });
-                  }
-                ),
-              ),
-              Expanded(child: page),
-            ],
-          );
-        }
-      }
-    );
-  }
-}
-
-
-class LogOutPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20), 
-        child: Column(
-          children: [
-            SizedBox(height: 25),
-            ElevatedButton(
-              onPressed: () {
-                Auth().unselectGroup();
-              },
-              child: Text("Change group"),
-            ),
-            SizedBox(height: 25),
-            ElevatedButton(
-              onPressed: () {
-                Auth().logout();
-              },
-              child: Text("Logout"),
-            ),
-          ],
         ),
       ),
     );

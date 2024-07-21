@@ -17,6 +17,14 @@ dependencies:
   flutter_session_manager: ^1.0.3
   
   riverpod_annotation: ^2.3.5
+  flutter_bloc: ^8.1.6
+  equatable: ^2.0.5
+  bloc: ^8.1.4
+  vhome_web_api:
+    path: packages/vhome_web_api
+  vhome_repository:
+    path: packages/vhome_repository
+  rxdart: ^0.28.0
 
 dev_dependencies:
   flutter_test:
