@@ -27,7 +27,7 @@ class TasksetsBloc extends Bloc<TasksetsEvent, TasksetsState> {
         tasksets: () => tasksets,
       ),
       onError: (_, __) => state.copyWith(
-        status: () => TasksetsStatus.failure
+        status: () => TasksetsStatus.failure,
       ),
     );
   }

@@ -5,6 +5,7 @@ enum TasksetDetailsStatus {
   loading,
   success,
   failure,
+  deleted,
 }
 
 final class TasksetDetailsState extends Equatable {
@@ -19,14 +20,14 @@ final class TasksetDetailsState extends Equatable {
   final List<Task> tasks;
 
   TasksetDetailsState copyWith({
-    TasksetDetailsStatus? status,
-    Taskset? taskset,
-    List<Task>? tasks,
+    TasksetDetailsStatus Function()? status,
+    Taskset Function()? taskset,
+    List<Task> Function()? tasks,
   }) {
     return TasksetDetailsState(
-      status: status ?? this.status,
-      taskset: taskset ?? this.taskset,
-      tasks: tasks ?? this.tasks,
+      status: status != null ? status() : this.status,
+      taskset: taskset != null ? taskset() : this.taskset,
+      tasks: tasks != null ? tasks() : this.tasks,
     );
   }
 

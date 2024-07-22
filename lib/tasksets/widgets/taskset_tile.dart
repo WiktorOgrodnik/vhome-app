@@ -1,29 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vhome_frontend/taskset_details/taskset_details.dart';
-import 'package:vhome_web_api/vhome_web_api.dart';
-
-class TasksetTileDetails extends StatelessWidget {
-  const TasksetTileDetails({required this.taskset, super.key});
-
-  final Taskset taskset;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: CircularProgressIndicator());
-    /*return Column(
-      children: <Widget>[
-        for (var task in taskService.getTasks(taskset.id, limit: 3))
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 6),
-            child: TaskListTile(
-              task: task,
-              editable: false,
-          ),
-        ),
-      ],
-    );*/
-  }
-}
+import 'package:vhome_frontend/tasksets/tasksets_page.dart';
+import 'package:vhome_repository/vhome_repository.dart';
 
 class TasksetTile extends StatelessWidget {
   const TasksetTile({required this.taskset, super.key});
@@ -39,10 +17,6 @@ class TasksetTile extends StatelessWidget {
 
     var styleSubText = theme.textTheme.titleMedium!.copyWith(
       color: theme.colorScheme.onPrimaryContainer,
-    );
-
-    final taskTileDetails = TasksetTileDetails(
-      taskset: taskset,
     );
 
     return Material(
@@ -81,8 +55,8 @@ class TasksetTile extends StatelessWidget {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: taskTileDetails,
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: TasksetTasksSummary(taskset: taskset),
                   ),
                   const Spacer(flex: 2),
                   Padding(

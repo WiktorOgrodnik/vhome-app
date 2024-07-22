@@ -2,7 +2,6 @@ import 'package:equatable/equatable.dart';
 import 'package:bloc/bloc.dart';
 import 'package:vhome_repository/vhome_repository.dart';
 
-
 part 'taskset_details_event.dart';
 part 'taskset_details_state.dart';
 
@@ -11,38 +10,51 @@ class TasksetDetailsBloc extends Bloc<TasksetDetailsEvent, TasksetDetailsState> 
       required VhomeRepository repository,
       required Taskset taskset,
     }) : _repository = repository, super(TasksetDetailsState(taskset: taskset)) {
-    on<TasksFetched>(_onTasksFetched);
+    on<TasksSubscriptionRequested>(_onTasksSubscriptionRequested);
     on<TaskCompletionToggled>(_onTaskCompletionToggled);
+    on<TaskDeleted>(_onTaskDeleted);
+    on<TasksetDeleted>(_onTasksetDeleted);
   }
 
   final VhomeRepository _repository;
 
-  Future<void> _onTasksFetched(
-    TasksFetched event,
+  Future<void> _onTasksSubscriptionRequested(
+    TasksSubscriptionRequested event,
     Emitter<TasksetDetailsState> emit,
   ) async {
-    try {
-      final tasks = await _repository.getTasks(state.taskset.id);
-      print(tasks.length);
-      emit(
-        state.copyWith(
-          status: TasksetDetailsStatus.success,
-          tasks: tasks,
-        ),
-      );
-    } catch (_) {
-      emit(state.copyWith(status: TasksetDetailsStatus.failure));
-    }
+    emit(state.copyWith(status: () => TasksetDetailsStatus.loading));
+
+    await emit.forEach(
+      _repository.getTasks(state.taskset.id),
+      onData: (tasks) => state.copyWith(
+        status: () => TasksetDetailsStatus.success,
+        tasks: () => tasks,
+      ),
+      onError: (_, __) => state.copyWith(
+        status: () => TasksetDetailsStatus.failure,
+      ),
+    );
   }
 
   Future<void> _onTaskCompletionToggled(
     TaskCompletionToggled event,
     Emitter<TasksetDetailsState> emit,
   ) async {
-    try {
-      await _repository.toggleTaskCompletion(event.task, event.value); 
-    } catch (error) {
-      print(error);
-    }
+    await _repository.toggleTaskCompletion(event.task, event.value); 
+  }
+
+  Future<void> _onTaskDeleted(
+    TaskDeleted event,
+    Emitter<TasksetDetailsState> emit,
+  ) async {
+    await _repository.deleteTask(event.task);
+  }
+
+  Future<void> _onTasksetDeleted(
+    TasksetDeleted event,
+    Emitter<TasksetDetailsState> emit,
+  ) async {
+    await _repository.deleteTaskset(event.taskset);
+    emit(state.copyWith(status: () => TasksetDetailsStatus.deleted));
   }
 }

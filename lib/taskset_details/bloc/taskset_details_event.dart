@@ -7,12 +7,8 @@ sealed class TasksetDetailsEvent extends Equatable {
   List<Object> get props => [];
 }
 
-final class TasksFetched extends TasksetDetailsEvent {
-  const TasksFetched();
-}
-
-final class TaskAdded extends TasksetDetailsEvent {
-  const TaskAdded();
+final class TasksSubscriptionRequested extends TasksetDetailsEvent {
+  const TasksSubscriptionRequested();
 }
 
 final class TaskDeleted extends TasksetDetailsEvent {
@@ -25,12 +21,12 @@ final class TaskDeleted extends TasksetDetailsEvent {
 }
 
 final class TasksetDeleted extends TasksetDetailsEvent {
-  const TasksetDeleted({required this.task});
+  const TasksetDeleted({required this.taskset});
 
-  final Task task;
+  final Taskset taskset;
 
   @override
-  List<Object> get props => [task];
+  List<Object> get props => [taskset];
 }
 
 final class TaskCompletionToggled extends TasksetDetailsEvent {

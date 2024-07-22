@@ -7,10 +7,10 @@ part 'task.g.dart';
 @JsonSerializable()
 class Task extends Equatable {
   const Task({
-    required this.id,
+    this.id = 0,
     required this.title,
     required this.content,
-    required this.completed,
+    this.completed = false,
     required this.tasksetId,
   });
 

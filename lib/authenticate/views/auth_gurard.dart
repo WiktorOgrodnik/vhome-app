@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vhome_frontend/authenticate/authenticate.dart';
 import 'package:vhome_frontend/groups_selection_page/views/views.dart';
 import 'package:vhome_frontend/home/view/view.dart';
-import 'package:vhome_frontend/views/login.dart';
+import 'package:vhome_frontend/login_page/view/view.dart';
 
 class AuthGuard extends StatelessWidget {
   @override
@@ -15,7 +15,7 @@ class AuthGuard extends StatelessWidget {
         }
         switch (snapshot.data) {
           case AuthState.unauthenticated:
-            return LoginScreen();
+            return LoginPage();
           case AuthState.groupUnselected:
             return GroupSelectionScreen();
           case AuthState.groupSelected:

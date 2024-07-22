@@ -50,11 +50,9 @@ class TaskStandardTile extends StatelessWidget {
             color: theme.colorScheme.onPrimary,
           ),
           onPressed: () {
-            try {
-              //taskSevice.delete(widget.task);
-            } catch (error) {
-              print(error);
-            }
+            context
+              .read<TasksetDetailsBloc>()
+              .add(TaskDeleted(task: task));
           }
         ) : Icon(Icons.abc) ,
         tileColor: theme.colorScheme.primary,

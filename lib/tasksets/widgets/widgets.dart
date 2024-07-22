@@ -1,2 +1,2 @@
-export 'taskset_list_item.dart';
+export 'taskset_tasks_summary.dart';
 export 'taskset_tile.dart';

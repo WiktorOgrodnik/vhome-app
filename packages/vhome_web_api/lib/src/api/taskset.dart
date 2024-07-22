@@ -49,4 +49,16 @@ class TasksetApi {
 
     _tasksetOutdated.add(null);
   }
+
+  Future<void> deleteTaskset(String token, Taskset taskset) async {
+    final uri = Uri.parse("$apiUrl/taskset/${taskset.id}");
+    final response = await http.delete(uri, headers: { 'Authorization': token });
+
+    if (response.statusCode != HttpStatus.ok) {
+      throw Exception("g");
+    }
+
+    _tasksetOutdated.add(null);
+  }
+
 }
