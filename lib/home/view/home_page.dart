@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:vhome_frontend/devices_page/view/devices_page.dart';
 import 'package:vhome_frontend/settings/views/views.dart';
-import 'package:vhome_frontend/tasksets/view/view.dart';
+import 'package:vhome_frontend/tasksets_page/view/view.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -20,7 +21,7 @@ class HomePageState extends State<HomePage> {
       case 0:
         page = TasksetsPage();
       case 1:
-        page = Placeholder();
+        page = DevicesPage();
       case 2:
         page = LogOutPage();
       default:

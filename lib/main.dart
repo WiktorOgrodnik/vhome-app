@@ -8,10 +8,15 @@ import 'package:vhome_web_api/vhome_web_api.dart';
 
 
 void main() {
+  DeviceApi deviceApi = DeviceApi();
   TasksetApi tasksetApi = TasksetApi();
   TaskApi taskApi = TaskApi();
 
-  VhomeRepository vhomeRepository = VhomeRepository(tasksetApi: tasksetApi, taskApi: taskApi);
+  VhomeRepository vhomeRepository = VhomeRepository(
+    deviceApi: deviceApi,
+    tasksetApi: tasksetApi,
+    taskApi: taskApi
+  );
 
   runApp(App(repository: vhomeRepository));
 }

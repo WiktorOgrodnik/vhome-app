@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:vhome_frontend/tasksets/tasksets_page.dart';
+import 'package:vhome_frontend/tasksets_page/tasksets_page.dart';
 
 class TasksetList extends StatelessWidget {
   @override

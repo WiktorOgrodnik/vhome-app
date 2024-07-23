@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vhome_frontend/taskset_details/taskset_details.dart';
-import 'package:vhome_frontend/tasksets/tasksets_page.dart';
+import 'package:vhome_frontend/tasksets_page/tasksets_page.dart';
 import 'package:vhome_repository/vhome_repository.dart';
 
 class TasksetTile extends StatelessWidget {

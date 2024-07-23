@@ -7,10 +7,10 @@ part of 'task.dart';
 // **************************************************************************
 
 Task _$TaskFromJson(Map<String, dynamic> json) => Task(
-      id: (json['id'] as num).toInt(),
+      id: (json['id'] as num?)?.toInt() ?? 0,
       title: json['title'] as String,
       content: json['content'] as String,
-      completed: json['completed'] as bool,
+      completed: json['completed'] as bool? ?? false,
       tasksetId: (json['taskset_id'] as num).toInt(),
     );
 

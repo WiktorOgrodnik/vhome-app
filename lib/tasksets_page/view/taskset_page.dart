@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vhome_frontend/add_taskset/view/view.dart';
-import 'package:vhome_frontend/tasksets/bloc/tasksets_bloc.dart';
-import 'package:vhome_frontend/tasksets/view/view.dart';
+import 'package:vhome_frontend/tasksets_page/tasksets_page.dart';
 import 'package:vhome_repository/vhome_repository.dart';
 
 class TasksetsPage extends StatelessWidget {

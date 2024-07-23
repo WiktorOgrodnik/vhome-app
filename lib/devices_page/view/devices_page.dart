@@ -1,0 +1,38 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vhome_frontend/add_taskset/view/view.dart';
+import 'package:vhome_frontend/devices_page/bloc/devices_bloc.dart';
+import 'package:vhome_frontend/devices_page/view/devices_list.dart';
+import 'package:vhome_repository/vhome_repository.dart';
+
+class DevicesPage extends StatelessWidget {
+  const DevicesPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => DevicesBloc(repository: context.read<VhomeRepository>())
+        ..add(DevicesSubscriptionRequested()),
+      child: const TasksetsView(),   
+    );
+  }
+}
+
+class TasksetsView extends StatelessWidget {
+  const TasksetsView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: DevicesList(),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () async {
+          await Navigator.of(context).push(
+            AddTasksetPage.route(),
+          );
+        },
+      ),
+    );
+  }
+}
