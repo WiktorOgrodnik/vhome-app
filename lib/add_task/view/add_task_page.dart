@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vhome_frontend/add_task/bloc/add_task_bloc.dart';
-import 'package:vhome_frontend/widgets/standard_field.dart';
 import 'package:vhome_repository/vhome_repository.dart';
 
 class AddTaskPage extends StatelessWidget {
@@ -45,25 +44,28 @@ class AddTaskView extends StatelessWidget {
       appBar: AppBar(
         title: Text("Add task to ${taskset.title}"),
       ),
-      body: const Center(
-        child: SizedBox(
-          width: 1000,
-          child: Scrollbar(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    _TitleField(),
-                    _ContentField(),
-                    SizedBox(height: 25),
-                    _AcceptButton(),
-                  ]
+      body: const Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 1000,
+            child: Scrollbar(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      _TitleField(),
+                      _ContentField(),
+                      SizedBox(height: 25),
+                      _AcceptButton(),
+                    ]
+                  ),
                 ),
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:vhome_frontend/add_taskset/view/view.dart';
+import 'package:vhome_frontend/add_device/view/add_device_page.dart';
 import 'package:vhome_frontend/devices_page/bloc/devices_bloc.dart';
 import 'package:vhome_frontend/devices_page/view/devices_list.dart';
 import 'package:vhome_repository/vhome_repository.dart';
@@ -29,7 +29,7 @@ class TasksetsView extends StatelessWidget {
         child: Icon(Icons.add),
         onPressed: () async {
           await Navigator.of(context).push(
-            AddTasksetPage.route(),
+            AddDevicePage.route(),
           );
         },
       ),

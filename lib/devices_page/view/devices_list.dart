@@ -11,6 +11,10 @@ class DevicesList extends StatelessWidget {
           case DevicesStatus.failure:
             return const Center(child: Text("failed to fetch devices."));
           case DevicesStatus.success:
+            if (state.devices.isEmpty) {
+              return Center(child: Text("No devices yet."));
+            }
+
             return SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Wrap(

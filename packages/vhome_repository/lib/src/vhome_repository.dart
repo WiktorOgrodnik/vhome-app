@@ -43,4 +43,5 @@ class VhomeRepository {
   // Devices
 
   Stream<List<Device>> getDevices() => _deviceApi.getDevices(_token!);
+  Future<DeviceToken> addDevice(String name, DeviceType type) => _deviceApi.addDevice(_token!, name, type);
 }

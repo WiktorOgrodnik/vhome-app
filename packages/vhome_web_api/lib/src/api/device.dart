@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:vhome_web_api/vhome_web_api.dart';
 import 'package:http/http.dart' as http;
@@ -47,5 +46,27 @@ class DeviceApi {
     }
 
     return devices; 
+  }
+
+  Future<DeviceToken> addDevice(String token, String name, DeviceType deviceType) async {
+    final uri = Uri.parse("$apiUrl/devices");
+    final payload = jsonEncode({ "name": name, "dev_t": deviceType.name });
+
+    final response = await http.post(
+      uri,
+      headers: {
+        'Authorization': token,
+        'Accept': 'application/json',
+        'content-type': 'application/json',
+      },
+      body: payload
+    );
+
+    if (response.statusCode != HttpStatus.created) {
+      throw Exception("Can not create device");
+    }
+    
+    final data = DeviceToken.fromJson(jsonDecode(response.body));
+    return data; 
   }
 }

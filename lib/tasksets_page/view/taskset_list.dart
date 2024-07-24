@@ -11,6 +11,10 @@ class TasksetList extends StatelessWidget {
           case TasksetsStatus.failure:
             return const Center(child: Text("failed to fetch tasksets"));
           case TasksetsStatus.success:
+            if (state.tasksets.isEmpty) {
+              return Center(child: Text("No tasksets yet."));
+            }
+
             return SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Wrap(

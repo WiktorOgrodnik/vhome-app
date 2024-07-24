@@ -12,7 +12,7 @@ enum DeviceType {
 
 sealed class Device extends Equatable {
   const Device({
-    required this.id,
+    this.id = 0,
     required this.name,
     required this.deviceType,
   });
@@ -43,6 +43,32 @@ sealed class Device extends Equatable {
 
   @override
   List<Object?> get props => [id, name, deviceType];
+}
+
+@JsonSerializable()
+class DeviceToken extends Equatable {
+  const DeviceToken({
+    required this.token,
+  });
+
+  factory DeviceToken.fromJson(JsonMap json) =>
+    _$DeviceTokenFromJson(json);
+  
+  JsonMap toJson() => _$DeviceTokenToJson(this);
+
+  final String token;
+
+  DeviceToken copyWith({
+    String? token,
+  }) {
+    return DeviceToken(
+      token: token ?? this.token
+    );
+  }
+  
+  @override
+  List<Object?> get props => [token];
+
 }
 
 @JsonSerializable()

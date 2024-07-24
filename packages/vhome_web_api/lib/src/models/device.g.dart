@@ -6,8 +6,17 @@ part of 'device.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+DeviceToken _$DeviceTokenFromJson(Map<String, dynamic> json) => DeviceToken(
+      token: json['token'] as String,
+    );
+
+Map<String, dynamic> _$DeviceTokenToJson(DeviceToken instance) =>
+    <String, dynamic>{
+      'token': instance.token,
+    };
+
 Thermometer _$ThermometerFromJson(Map<String, dynamic> json) => Thermometer(
-      id: (json['id'] as num).toInt(),
+      id: (json['id'] as num?)?.toInt() ?? 0,
       name: json['name'] as String,
       deviceType: $enumDecodeNullable(_$DeviceTypeEnumMap, json['dev_t']) ??
           DeviceType.thermometer,
