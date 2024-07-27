@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:vhome_frontend/authenticate/authenticate.dart';
-import 'package:vhome_frontend/models/group.dart';
-import 'package:vhome_frontend/service/group.dart';
 import 'package:vhome_repository/vhome_repository.dart';
+import 'package:vhome_web_api/vhome_web_api.dart';
 
 class GroupListTile extends StatefulWidget {
   final Group group;
@@ -24,7 +22,6 @@ class GroupListTileState extends State<GroupListTile> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final repository = context.read<VhomeRepository>();
     const borderRadius = BorderRadius.all(Radius.circular(8));
 
     return Material(
@@ -36,9 +33,10 @@ class GroupListTileState extends State<GroupListTile> {
         title: Text(widget.group.name),
         tileColor: theme.colorScheme.primary,
         textColor: theme.colorScheme.onPrimary,
-        onTap: () => {
-          Auth().selectGroup(repository, widget.group.id)
-        },
+        onTap: () =>
+          context
+            .read<VhomeRepository>()
+            .selectGroup(widget.group.id),
       ),
     );
   }
@@ -46,6 +44,10 @@ class GroupListTileState extends State<GroupListTile> {
 
 
 class GroupSelectionScreen extends StatefulWidget {
+  static Route<void> route() {
+    return MaterialPageRoute<void>(builder: (_) => GroupSelectionScreen());
+  }
+
   @override
     State<StatefulWidget> createState() => GroupSelectionScreenState();
 }
@@ -56,32 +58,37 @@ class GroupSelectionScreenState extends State<GroupSelectionScreen> {
   @override
   void initState() {
     super.initState();
-    groups = GroupService().getGroups(context.read<VhomeRepository>());
+    groups = context.read<VhomeRepository>().getGroups();
   }
 
   @override
   Widget build(BuildContext context) {
 
-    return SafeArea(
-      child: FutureBuilder<List<Group>>(
-        future: groups,
-        builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return Column(
-            children: <Widget>[
-              for (var group in snapshot.data!)
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 6),
-                  child: GroupListTile(
-                    group: group,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Select group")
+      ),
+      body: SafeArea(
+        child: FutureBuilder<List<Group>>(
+          future: groups,
+          builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return Column(
+              children: <Widget>[
+                for (var group in snapshot.data!)
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 6),
+                    child: GroupListTile(
+                      group: group,
+                    ),
                   ),
-                ),
-              ],
-            );
-          } else {
-            return CircularProgressIndicator();
-          }
-        },
+                ],
+              );
+            } else {
+              return CircularProgressIndicator();
+            }
+          },
+        ),
       ),
     );
   }

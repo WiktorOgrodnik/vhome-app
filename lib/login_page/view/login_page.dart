@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:vhome_frontend/authenticate/authenticate.dart';
 import 'package:vhome_frontend/widgets/confirm_button.dart';
 import 'package:vhome_frontend/widgets/standard_field.dart';
 import 'package:vhome_repository/vhome_repository.dart';
@@ -21,7 +20,7 @@ class LoginForm extends StatelessWidget {
 
   void onPressed(VhomeRepository repository) async {
     if (_formKey.currentState!.validate()) {
-      await Auth().login(repository, username.text, password.text);
+      await repository.loginUser(username.text, password.text);
     }
   }
 
@@ -59,29 +58,38 @@ class LoginForm extends StatelessWidget {
 }
 
 class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+  const LoginPage({super.key});
+
+  static Route<void> route() {
+    return MaterialPageRoute<void>(builder: (_) => const LoginPage());
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Center(
-        child: Column(
-          children: [
-            const SizedBox(height: 50),
-            const Icon(
-              Icons.lock,
-              size: 100,
-            ),
-            const SizedBox(height: 50),
-            Text(
-              "Welcome back!",
-              style: TextStyle(
-                color: Colors.grey[700],
-                fontSize: 16,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Login to Vhome account"),
+      ),
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            children: [
+              const SizedBox(height: 50),
+              const Icon(
+                Icons.lock,
+                size: 100,
               ),
-            ),
-            LoginForm(),
-          ],
+              const SizedBox(height: 50),
+              Text(
+                "Welcome back!",
+                style: TextStyle(
+                  color: Colors.grey[700],
+                  fontSize: 16,
+                ),
+              ),
+              LoginForm(),
+            ],
+          ),
         ),
       ),
     );

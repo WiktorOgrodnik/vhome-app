@@ -10,6 +10,13 @@ enum DeviceType {
   other,
 }
 
+enum ThermometerFields {
+  none,
+  onlyThermometer,
+  onlyHumidity,
+  thermometerHumidity,
+}
+
 sealed class Device extends Equatable {
   const Device({
     this.id = 0,
@@ -79,6 +86,7 @@ final class Thermometer extends Device {
     super.deviceType = DeviceType.thermometer,
     required this.lastTemperature,
     required this.lastUpdated,
+    required this.lastHumidity,
   });
 
   factory Thermometer.fromJson(JsonMap json) =>
@@ -87,12 +95,20 @@ final class Thermometer extends Device {
   @override
   JsonMap toJson() => _$ThermometerToJson(this);
   
+  @JsonKey(name: 'last_temp')
+  final double? lastTemperature;
+  @JsonKey(name: 'last_humidity')
+  final double? lastHumidity;
+  @JsonKey(name: 'last_updated')
+  final DateTime lastUpdated;
+
   @override
   Device copyWith({
     int? id,
     String? name,
     DeviceType? deviceType,
     double? lastTemperature,
+    double? lastHumidity,
     DateTime? lastUpdated,
   }) {
     return Thermometer(
@@ -100,6 +116,7 @@ final class Thermometer extends Device {
       name: name ?? this.name,
       deviceType: deviceType ?? this.deviceType,
       lastTemperature: lastTemperature ?? this.lastTemperature,
+      lastHumidity: lastHumidity ?? this.lastHumidity,
       lastUpdated: lastUpdated ?? this.lastUpdated,
     );
   }
@@ -107,20 +124,30 @@ final class Thermometer extends Device {
   @override
   Map<String, String> get infoFields => {
     "Last temperature": lastTemperature != null ? lastTemperature.toString() : "null",
-    "Last updated": lastUpdated != null ? lastUpdated.toString() : "null",
+    "Last humidity": lastHumidity != null ? lastHumidity.toString() : "null",
+    "Last updated": lastUpdated.toString()
   };
 
-  @JsonKey(name: 'last_temp')
-  final double? lastTemperature;
-  @JsonKey(name: 'last_updated')
-  final DateTime? lastUpdated;
+  ThermometerFields get fields {
+    switch ((lastTemperature, lastHumidity)) {
+      case (null, null):
+        return ThermometerFields.none;
+      case (_, null):
+        return ThermometerFields.onlyThermometer;
+      case (null, _):
+        return ThermometerFields.onlyHumidity;
+      default:
+        return ThermometerFields.thermometerHumidity;
+    }
+  }
 
-  @override
+    @override
   List<Object?> get props => [
     super.id,
     super.name,
     super.deviceType,
     lastTemperature,
-    lastUpdated
+    lastHumidity,
+    lastUpdated,
   ]; 
 }

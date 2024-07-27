@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vhome_frontend/add_task/bloc/add_task_bloc.dart';
+import 'package:vhome_frontend/widgets/widgets.dart';
 import 'package:vhome_repository/vhome_repository.dart';
 
 class AddTaskPage extends StatelessWidget {
@@ -44,57 +46,28 @@ class AddTaskView extends StatelessWidget {
       appBar: AppBar(
         title: Text("Add task to ${taskset.title}"),
       ),
-      body: const Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 1000,
-            child: Scrollbar(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      _TitleField(),
-                      _ContentField(),
-                      SizedBox(height: 25),
-                      _AcceptButton(),
-                    ]
-                  ),
+      body: Container(
+        alignment: Alignment.topCenter,
+        child: SizedBox(
+          width: 1000,
+          child: Scrollbar(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    _TitleField(),
+                    _ContentField(),
+                    SizedBox(height: 25),
+                    _AcceptButton(),
+                  ],
                 ),
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Field extends StatelessWidget {
-  const _Field({
-    required this.hintText,
-    required this.onChanged
-  });
-  
-  final ValueChanged<String>? onChanged;
-  final String hintText;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      decoration: InputDecoration(
-        enabledBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.white),
         ),
-        focusedBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.blueGrey),
-        ),
-        fillColor: Colors.grey.shade200,
-        filled: true,
-        hintText: hintText,
-      ),
-      onChanged: onChanged,
+      )
     );
   }
 }
@@ -104,7 +77,7 @@ class _TitleField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _Field(
+    return StandardField2(
       hintText: "Title",
       onChanged: (value) {
         context.read<AddTaskBloc>().add(AddTaskTitleChanged(title: value));
@@ -118,7 +91,7 @@ class _ContentField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _Field(
+    return StandardField2(
       hintText: "Content",
       onChanged: (value) {
         context.read<AddTaskBloc>().add(AddTaskContentChanged(content: value));

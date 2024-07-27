@@ -23,7 +23,7 @@ class DeviceApi {
       throw Exception('Can not get the Devices');
     }
 
-    final List<dynamic> data = jsonDecode(response.body);
+    final List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
     List<Device> devices = [];
 
     for (var rawDevice in data) {
@@ -36,7 +36,7 @@ class DeviceApi {
         throw Exception("Can not get the $deviceType");
       }
 
-      final dynamic dataDetails = jsonDecode(responseDetails.body);
+      final dynamic dataDetails = jsonDecode(utf8.decode(responseDetails.bodyBytes));
       final JsonMap dataCombined = {};
       dataCombined.addAll(rawDevice);
       dataCombined.addAll(dataDetails);

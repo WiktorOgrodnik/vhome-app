@@ -25,6 +25,8 @@ dependencies:
   vhome_repository:
     path: packages/vhome_repository
   rxdart: ^0.28.0
+  intl: ^0.19.0
+  tuple: ^2.0.2
 
 dev_dependencies:
   flutter_test:
