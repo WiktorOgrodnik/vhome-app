@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 class ConfirmButton extends StatelessWidget {
   final Function()? onPressed;
+  final Widget child;
 
-  const ConfirmButton({
+  ConfirmButton({
     super.key,
     required this.onPressed,
+    required this.child
   });
 
   @override
@@ -14,10 +16,8 @@ class ConfirmButton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: ElevatedButton(
         onPressed: onPressed,
-        child: const Center(
-          child: Text(
-            "Sign in",
-          ),
+        child: Center(
+          child: child,
         ),
       ),
     );

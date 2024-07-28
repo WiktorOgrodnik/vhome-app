@@ -44,7 +44,7 @@ class VhomeRepository {
 
   Future<User?> tryGetUser() async => _user;
   
-  Future<void> loginUser(String username, String password) async {
+  Future<bool> loginUser(String username, String password) async {
     _authStateController.add(AuthState.pending);
     _user = await _userApi.getAuthToken(username, password);
     _authStateController.add(
@@ -52,6 +52,8 @@ class VhomeRepository {
         AuthState.groupUnselected :
         AuthState.unauthenticated
     );
+
+    return _user != null;
   }
 
   Future<void> selectGroup(int groupId) async {
@@ -103,7 +105,7 @@ class VhomeRepository {
 
   // Groups
 
-  Future<List<Group>> getGroups() => _groupApi.getGroups(_user!.token);
+  Stream<List<Group>> getGroups() => _groupApi.getGroups(_user!.token);
 
   void dispose() => _authStateController.close();
 }

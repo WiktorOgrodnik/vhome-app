@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formz/formz.dart';
 import 'package:vhome_frontend/add_taskset/bloc/add_taskset_bloc.dart';
+import 'package:vhome_frontend/widgets/confirm_button.dart';
+import 'package:vhome_frontend/widgets/standard_field.dart';
 import 'package:vhome_repository/vhome_repository.dart';
 
 class AddTasksetPage extends StatelessWidget {
@@ -20,11 +23,28 @@ class AddTasksetPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AddTasksetBloc, AddTasksetState>(
-      listenWhen: (previous, current) =>
-        previous.status != current.status &&
-        current.status == AddTasksetStatus.success,
-      listener: (context, state) => Navigator.of(context).pop(),
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<AddTasksetBloc, AddTasksetState>(
+          listenWhen: (previous, current) =>
+            previous.status != current.status &&
+            current.status == FormzSubmissionStatus.success,
+          listener: (context, state) => Navigator.of(context).pop()
+        ),
+        BlocListener<AddTasksetBloc, AddTasksetState>(
+          listenWhen: (previous, current) =>
+            previous.status != current.status &&
+            current.status == FormzSubmissionStatus.failure,
+          listener: (context, state) => 
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                const SnackBar(
+                  content: Text("Failed to add taskset!")
+                )
+              )
+        ),
+      ],
       child: const AddTasksetView(),
     );
   }
@@ -35,23 +55,28 @@ class AddTasksetView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final status = context.select((AddTasksetBloc bloc) => bloc.state.status);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add taskset"),
+        title: const Text("Add taskset"),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: status == AddTasksetStatus.initial ?
-          () => context.read<AddTasksetBloc>().add(const AddTasksetSubmitted()) :
-          null,
-      ),
-      body: const Scrollbar(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(20),
-            child: Column(
-              children: [_NameField()]
+      body: Container(
+        alignment: Alignment.topCenter,
+        child: SizedBox(
+          width: 1000,
+          child: Scrollbar(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    _NameField(),
+                    const SizedBox(height: 25),
+                    _ConfirmButton(),
+                  ]
+                ),
+              ),
             ),
           ),
         ),
@@ -65,10 +90,33 @@ class _NameField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      onChanged: (value) {
-        context.read<AddTasksetBloc>().add(AddTasksetNameChanged(name: value));
-      },
+    return BlocBuilder<AddTasksetBloc, AddTasksetState>(
+      buildWhen: (previous, current) => previous.name != current.name,
+      builder: (context, state) {
+        return StandardFormField(
+          hintText: "Taskset name",
+          onChanged: (value) => context.read<AddTasksetBloc>().add(AddTasksetNameChanged(name: value)),
+          errorText: state.name.displayError != null ? 'taskset name can not be empty' : null,
+        );
+      }
     );
+  }
+}
+
+class _ConfirmButton extends StatelessWidget {
+  _ConfirmButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final state = context.select((AddTasksetBloc bloc) => bloc.state);
+
+    return state.status.isInProgress
+        ? const CircularProgressIndicator()
+        : ConfirmButton(
+            onPressed: state.isValid
+              ? () => context.read<AddTasksetBloc>().add(const AddTasksetSubmitted())
+              : null,
+            child: Text("Add taskset"),
+          );
   }
 }

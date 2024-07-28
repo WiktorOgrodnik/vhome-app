@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vhome_frontend/add_device/bloc/add_device_bloc.dart';
+import 'package:vhome_frontend/widgets/widgets.dart';
 
 class AddDeviceTokenPage extends StatelessWidget {
   const AddDeviceTokenPage({super.key});
@@ -13,48 +14,32 @@ class AddDeviceTokenPage extends StatelessWidget {
       appBar: AppBar(
         title: Text("Save token"),
       ),
-      body: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 1000,
-            child: Scrollbar(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      _Title(),
-                      SizedBox(height: 25),
-                      _TokenField(),
-                      SizedBox(height: 25),
-                      _Info(),
-                      SizedBox(height: 25),
-                      _ReturnButton(),
-                    ],
-                  ),
+      body: Container(
+        alignment: Alignment.topCenter,
+        child: SizedBox(
+          width: 1000,
+          child: Scrollbar(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    SectionTitle(
+                      child: Text("Your new device token"),
+                    ),
+                    SizedBox(height: 25),
+                    _TokenField(),
+                    SizedBox(height: 25),
+                    _Info(),
+                    SizedBox(height: 25),
+                    _ReturnButton(),
+                  ],
                 ),
               ),
             ),
           ),
-        ],
+        ),
       ),
-    );
-  }
-}
-
-class _Title extends StatelessWidget {
-  const _Title();
-  
-  @override
-  Widget build(BuildContext context) {
-    return DefaultTextStyle(
-      style: const TextStyle(
-        color: Colors.black,
-        fontSize: 26,
-        fontWeight: FontWeight.bold,
-      ),
-      child: Text("Your new device token"),
     );
   }
 }
@@ -99,7 +84,7 @@ class _ReturnButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final status = context.select((AddDeviceBloc bloc) => bloc.state.status);
 
-    return ElevatedButton(
+    return ConfirmButton(
       onPressed: status == AddDeviceStatus.displayToken ?
         () => context.read<AddDeviceBloc>().add(const AddDeviceReturnClicked())
         : null,

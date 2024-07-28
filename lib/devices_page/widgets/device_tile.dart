@@ -14,14 +14,10 @@ class DeviceTile extends StatelessWidget {
     final style = theme.textTheme.titleLarge!.copyWith(
       color: theme.colorScheme.onPrimaryContainer,
     );
-
-    var styleSubText = theme.textTheme.titleMedium!.copyWith(
-      color: theme.colorScheme.onPrimaryContainer,
-    );
-
+    
     return Stack(
       children: [
-                Material(
+        Material(
           elevation: 4,
           color: Colors.transparent,
           borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -50,17 +46,8 @@ class DeviceTile extends StatelessWidget {
                         textAlign: TextAlign.center,
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Builder(
-                          builder: (context) {
-                            switch (device.deviceType) {
-                              case DeviceType.thermometer:
-                                return ThermometerContent(thermometer: device as Thermometer);
-                              default:
-                                return const Placeholder();
-                            }
-                          }
-                        ),
+                        padding: const EdgeInsets.all(12.0),
+                        child: ThermometerContent(thermometer: device as Thermometer),
                       ),
                       const Spacer(flex: 2),
                       if (device.deviceType == DeviceType.thermometer)
@@ -88,7 +75,7 @@ class DeviceTile extends StatelessWidget {
           && DateTime.now().toLocal().difference((device as Thermometer).lastUpdated.toLocal()).inMinutes > 60)
           Positioned(
             top: 5,
-            left: 360,
+            right: 10,
             child: Tooltip(
               message: "This device has not been updated for a long time.",
               child: Icon(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formz/formz.dart';
 import 'package:vhome_frontend/add_task/bloc/add_task_bloc.dart';
 import 'package:vhome_frontend/widgets/widgets.dart';
 import 'package:vhome_repository/vhome_repository.dart';
@@ -25,11 +25,28 @@ class AddTaskPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AddTaskBloc, AddTaskState>(
-      listenWhen: (previous, current) =>
-        previous.status != current.status &&
-        current.status == AddTaskStatus.success,
-      listener: (context, state) => Navigator.of(context).pop(),
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<AddTaskBloc, AddTaskState>(
+          listenWhen: (previous, current) =>
+            previous.status != current.status &&
+            current.status == FormzSubmissionStatus.success,
+          listener: (context, state) => Navigator.of(context).pop(),
+        ),
+        BlocListener<AddTaskBloc, AddTaskState>(
+          listenWhen: (previous, current) =>
+            previous.status != current.status &&
+            current.status == FormzSubmissionStatus.failure,
+          listener: (context, state) => 
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                const SnackBar(
+                  content: Text("Failed to add task!")
+                )
+              )
+        ),
+      ],
       child: AddTaskView(taskset: taskset),
     );
   }
@@ -58,6 +75,7 @@ class AddTaskView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     _TitleField(),
+                    SizedBox(height: 25),
                     _ContentField(),
                     SizedBox(height: 25),
                     _AcceptButton(),
@@ -77,11 +95,15 @@ class _TitleField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StandardField2(
-      hintText: "Title",
-      onChanged: (value) {
-        context.read<AddTaskBloc>().add(AddTaskTitleChanged(title: value));
-      },
+    return BlocBuilder<AddTaskBloc, AddTaskState>(
+      buildWhen: (previous, current) => previous.title != current.title,
+      builder: (context, state) {
+        return StandardFormField(
+          hintText: "Title",
+          onChanged: (value) => context.read<AddTaskBloc>().add(AddTaskTitleChanged(title: value)),
+          errorText: state.title.displayError != null ? 'task title can not be null' : null,
+        );
+      }
     );
   }
 }
@@ -91,11 +113,15 @@ class _ContentField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StandardField2(
-      hintText: "Content",
-      onChanged: (value) {
-        context.read<AddTaskBloc>().add(AddTaskContentChanged(content: value));
-      },
+    return BlocBuilder<AddTaskBloc, AddTaskState>(
+      buildWhen: (previous, current) => previous.content != current.content,
+      builder: (context, state) {
+        return StandardFormField(
+          hintText: "Content",
+          onChanged: (value) => context.read<AddTaskBloc>().add(AddTaskContentChanged(content: value)),
+          errorText: state.content.displayError != null ? 'task content can not be null' : null,
+        );
+      }
     );
   }
 }
@@ -106,13 +132,15 @@ class _AcceptButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final status = context.select((AddTaskBloc bloc) => bloc.state.status);
+    final state = context.select((AddTaskBloc bloc) => bloc.state);
 
-    return ElevatedButton(
-      onPressed: status == AddTaskStatus.initial ?
-        () => context.read<AddTaskBloc>().add(const AddTaskSubmitted())
-        : null,
-      child: Text("Add"),
-    );
+    return state.status.isInProgress
+        ? const CircularProgressIndicator()
+        : ConfirmButton(
+            onPressed: state.isValid 
+              ? () => context.read<AddTaskBloc>().add(const AddTaskSubmitted())
+              : null,
+            child: Text("Add task"),
+          );
   }
 }

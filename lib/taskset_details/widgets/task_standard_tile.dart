@@ -38,7 +38,7 @@ class TaskStandardTile extends StatelessWidget {
           ) : null, 
         ),
         subtitle: Text(
-          task.content,
+          task.content.length > 70 ? '${task.content.substring(0, 70)}...' : task.content,
           style: task.completed ? TextStyle(
             decoration: TextDecoration.lineThrough,
             decorationColor: theme.colorScheme.onPrimary,

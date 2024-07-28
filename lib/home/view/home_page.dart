@@ -29,15 +29,17 @@ class HomeView extends StatelessWidget {
     final theme = Theme.of(context);
     final selectedPage = context.select((HomeCubit cubit) => cubit.state.page);
 
-    final Widget page = 
-      IndexedStack(
-        index: selectedPage.index,
-        children: const [
-          TasksetsPage(),
-          DevicesPage(),
-          LogOutPage(),
-        ]
-      );
+    final Widget page;
+    switch (selectedPage.index) {
+      case 0:
+        page = TasksetsPage();
+      case 1:
+        page = DevicesPage();
+      case 2:
+        page = LogOutPage();
+      default:
+        throw UnimplementedError('no widget for $selectedPage');
+    }
 
     return Scaffold(
       appBar: AppBar(

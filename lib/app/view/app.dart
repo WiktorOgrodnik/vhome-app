@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vhome_frontend/authentication/bloc/authentication_bloc.dart';
-import 'package:vhome_frontend/groups_selection_page/views/views.dart';
+import 'package:vhome_frontend/group_selection_page/views/views.dart';
 import 'package:vhome_frontend/home/view/home_page.dart';
 import 'package:vhome_frontend/login_page/view/view.dart';
 import 'package:vhome_frontend/splash/splash.dart';
@@ -57,7 +57,7 @@ class _AppViewState extends State<AppView> {
                 );
               case AuthState.groupUnselected:
                 _navigator.pushAndRemoveUntil<void>(
-                  GroupSelectionScreen.route(),
+                  GroupSelectionPage.route(),
                   (route) => false,
                 );
               case AuthState.groupSelected:
@@ -78,22 +78,3 @@ class _AppViewState extends State<AppView> {
     );
   }
 }
-
-
-  //@override
-  //Widget build(BuildContext context) {
-    //final theme = Theme.of(context);
-
-    //return Scaffold(
-      //backgroundColor: theme.colorScheme.surface,
-      //appBar: AppBar(
-      //  backgroundColor: theme.colorScheme.surfaceContainer,
-      //  title: const Text("vHome"),
-      //),
-      //body: Builder(
-      //  builder: (context) {
-      //            }
-      //),  
-//    );
-//  }
-//}

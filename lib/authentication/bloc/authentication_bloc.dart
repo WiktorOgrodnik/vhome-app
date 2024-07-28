@@ -14,6 +14,7 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
     })  : _repository = repository,
           super(const AuthenticationState.pending()) {
       on<_AuthenticationStatusChanged>(_onAuthenticationStatusChanged);
+      on<AuthenticationGroupSelected>(_onAuthenticationGroupSelected);
       on<AuthenticationGroupUnselectionRequested>(_onAuthenticationGroupUnselectionRequested);
       on<AuthenticationLogoutRequested>(_onAuthenticationLogoutRequested);
       _authStateSubscription = _repository.authState$.listen(
@@ -55,6 +56,13 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
         default:
           return emit(const AuthenticationState.pending());
       }
+    }
+
+    void _onAuthenticationGroupSelected(
+      AuthenticationGroupSelected event,
+      Emitter<AuthenticationState> emit,
+    ) {
+      unawaited(_repository.selectGroup(event.group.id));
     }
 
     void _onAuthenticationGroupUnselectionRequested(

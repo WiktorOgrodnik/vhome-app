@@ -44,7 +44,7 @@ class TasksetApi {
     );
 
     if (response.statusCode != HttpStatus.created) {
-      throw Exception("g");
+      throw Exception("Failed to add taskset.");
     }
 
     _tasksetOutdated.add(null);

@@ -1,5 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:formz/formz.dart';
+import 'package:vhome_frontend/add_device/models/device_name.dart';
+import 'package:vhome_frontend/add_device/models/models.dart';
 import 'package:vhome_repository/vhome_repository.dart';
 import 'package:vhome_web_api/vhome_web_api.dart';
 
@@ -22,14 +25,27 @@ class AddDeviceBloc extends Bloc<AddDeviceEvent, AddDeviceState> {
     AddDeviceNameChanged event,
     Emitter<AddDeviceState> emit
   ) {
-    emit(state.copyWith(name: event.name));
+    final name = DeviceName.dirty(event.name);
+    emit(
+      state.copyWith(
+        name: name,
+        isValid: Formz.validate([name, state.deviceType]),
+      )
+    );
   }
 
   void _onTypeSelected(
     AddDeviceTypeSelected event,
     Emitter<AddDeviceState> emit
   ) {
-    emit(state.copyWith(deviceType: event.type));
+    final deviceType = DeviceTypeModel.dirty(event.type);
+    emit(
+      state.copyWith(
+        deviceType: deviceType,
+        isValid: Formz.validate([state.name, deviceType]),
+      )
+    );
+
   }
 
 
@@ -37,21 +53,19 @@ class AddDeviceBloc extends Bloc<AddDeviceEvent, AddDeviceState> {
     AddDeviceSubmitted event,
     Emitter<AddDeviceState> emit,
   ) async {
-    final name = state.name;
-    final type = state.deviceType;
+    emit(state.copyWith(formStatus: FormzSubmissionStatus.inProgress));
+    final name = state.name.value;
+    final type = state.deviceType.value;
 
-    if (type == null) {
-      emit(state.copyWith(status: AddDeviceStatus.failure));
-    } else {
-      try {
-        final returnedDevice = await _repository.addDevice(name, type);
-        emit(state.copyWith(
-          status: AddDeviceStatus.displayToken,
-          token: returnedDevice.token)
-        );
-      } catch (_) {
-        emit(state.copyWith(status: AddDeviceStatus.failure));
-      }
+    try {
+      final returnedDevice = await _repository.addDevice(name, type);
+      emit(state.copyWith(
+        status: AddDeviceStatus.displayToken,
+        formStatus: FormzSubmissionStatus.success,
+        token: returnedDevice.token)
+      );
+    } catch (_) {
+      emit(state.copyWith(formStatus: FormzSubmissionStatus.failure));
     }
   }
 
@@ -59,6 +73,6 @@ class AddDeviceBloc extends Bloc<AddDeviceEvent, AddDeviceState> {
     AddDeviceReturnClicked event,
     Emitter<AddDeviceState> emit
   ) {
-    emit(state.copyWith(status: AddDeviceStatus.success));
+    emit(state.copyWith(status: AddDeviceStatus.exit));
   }
 }

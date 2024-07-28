@@ -1,5 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:formz/formz.dart';
+import 'package:vhome_frontend/add_task/add_task.dart';
 import 'package:vhome_repository/vhome_repository.dart';
 
 part 'add_task_event.dart';
@@ -21,14 +23,26 @@ class AddTaskBloc extends Bloc<AddTaskEvent, AddTaskState> {
     AddTaskTitleChanged event,
     Emitter<AddTaskState> emit
   ) {
-    emit(state.copyWith(title: event.title));
+    final title = TaskTitle.dirty(event.title); 
+    emit(
+      state.copyWith(
+        title: title,
+        isValid: Formz.validate([title, state.content])
+      )
+    );  
   }
 
   void _onContentChanged(
     AddTaskContentChanged event,
     Emitter<AddTaskState> emit
   ) {
-    emit(state.copyWith(content: event.content));
+    final content = Content.dirty(event.content); 
+    emit(
+      state.copyWith(
+        content: content,
+        isValid: Formz.validate([state.title, content])
+      )
+    );
   }
 
 
@@ -36,17 +50,18 @@ class AddTaskBloc extends Bloc<AddTaskEvent, AddTaskState> {
     AddTaskSubmitted event,
     Emitter<AddTaskState> emit,
   ) async {
+
     final task = Task(
-      title: state.title,
-      content: state.content,
+      title: state.title.value,
+      content: state.content.value,
       tasksetId: state.taskset.id,
     );
 
     try {
       await _repository.addTask(task);
-      emit(state.copyWith(status: AddTaskStatus.success));
+      emit(state.copyWith(status: FormzSubmissionStatus.success));
     } catch (_) {
-      emit(state.copyWith(status: AddTaskStatus.failure));
+      emit(state.copyWith(status: FormzSubmissionStatus.failure));
     }
   }
 

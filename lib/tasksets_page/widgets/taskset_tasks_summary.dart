@@ -25,10 +25,7 @@ class TasksetTasksSummaryView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 250.0,
-      child: TasksetDetailsList(summary: true),
-    );
+    return TasksetDetailsList(summary: true);
   }
 }
 
