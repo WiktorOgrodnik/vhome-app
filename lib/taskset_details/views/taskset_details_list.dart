@@ -23,6 +23,9 @@ class TasksetDetailsList extends StatelessWidget {
             return state.tasks.isEmpty ?
               const Center(child: Text("No tasks yet.")) :
               ListView.builder(
+                physics: summary 
+                          ? NeverScrollableScrollPhysics()
+                          : AlwaysScrollableScrollPhysics(),
                 itemCount: summary ? min(state.tasks.length, 3) : state.tasks.length,
                 itemBuilder: (context, index) {
                   return Padding(
