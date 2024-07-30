@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vhome_frontend/devices_page/view/view.dart';
 import 'package:vhome_frontend/home/cubit/home_cubit.dart';
+import 'package:vhome_frontend/home/view/view.dart';
 import 'package:vhome_frontend/settings/views/views.dart';
 import 'package:vhome_frontend/tasksets_page/view/view.dart';
 
@@ -30,13 +31,13 @@ class HomeView extends StatelessWidget {
     final selectedPage = context.select((HomeCubit cubit) => cubit.state.page);
 
     final Widget page;
-    switch (selectedPage.index) {
-      case 0:
+    switch (selectedPage) {
+      case HomeSubPage.tasksets:
         page = TasksetsPage();
-      case 1:
+      case HomeSubPage.devices:
         page = DevicesPage();
-      case 2:
-        page = LogOutPage();
+      case HomeSubPage.settings:
+        page = SettingsPage();
       default:
         throw UnimplementedError('no widget for $selectedPage');
     }
@@ -49,63 +50,14 @@ class HomeView extends StatelessWidget {
       body: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth < 500) {
-            return Column(
-              children: [
-                Expanded(child: page),
-                SafeArea(
-                  child: BottomNavigationBar(
-                    items: [
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.home),
-                        label: "Home",
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.devices),
-                        label: "Devices",
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.exit_to_app),
-                        label: "Logout",
-                      ),
-                    ],
-                    currentIndex: selectedPage.index,
-                    onTap: (value) {
-                      context.read<HomeCubit>().setTab(HomeSubPage.values[value]);
-                    },
-                  )
-                )
-              ],
+            return HomePageMobile(
+              index: selectedPage.index,
+              child: page,
             );
           } else {
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SafeArea(
-                  child: NavigationRail(
-                    extended: constraints.maxWidth >= 1150,
-                    backgroundColor: theme.colorScheme.surfaceContainer,
-                    destinations: [
-                      NavigationRailDestination(
-                        icon: Icon(Icons.home),
-                        label: Text("Home"),
-                      ),
-                      NavigationRailDestination(
-                        icon: Icon(Icons.devices),
-                        label: Text("Devices"),
-                      ),
-                      NavigationRailDestination(
-                        icon: Icon(Icons.exit_to_app),
-                        label: Text("Logout"),
-                      ),
-                    ],
-                    selectedIndex: selectedPage.index,
-                    onDestinationSelected: (value) {
-                      context.read<HomeCubit>().setTab(HomeSubPage.values[value]);
-                    }
-                  ),
-                ),
-                Expanded(child: page),
-              ],
+            return HomePageDesktop(
+              index: selectedPage.index,
+              child: page,
             );
           }
         }

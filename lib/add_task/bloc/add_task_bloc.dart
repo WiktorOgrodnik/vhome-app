@@ -55,6 +55,7 @@ class AddTaskBloc extends Bloc<AddTaskEvent, AddTaskState> {
       title: state.title.value,
       content: state.content.value,
       tasksetId: state.taskset.id,
+      taskAssigned: [],
     );
 
     try {

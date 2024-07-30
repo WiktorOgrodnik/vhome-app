@@ -8,17 +8,17 @@ class AuthenticationState extends Equatable {
 
   const AuthenticationState.pending() : this._();
   
-  const AuthenticationState.groupSelected(User user)
+  const AuthenticationState.groupSelected(AuthModel user)
       : this._(status: AuthState.groupSelected, user: user);
 
-  const AuthenticationState.groupUnselected(User user)
+  const AuthenticationState.groupUnselected(AuthModel user)
       : this._(status: AuthState.groupUnselected, user: user);
 
-  const AuthenticationState.unauthenticated()
-      : this._(status: AuthState.unauthenticated);
-  
+  const AuthenticationState.unauthenticated(AuthModel? user)
+      : this._(status: AuthState.unauthenticated, user: user);
+ 
   final AuthState status;
-  final User? user;
+  final AuthModel? user;
 
   @override
   List<Object?> get props => [status, user];

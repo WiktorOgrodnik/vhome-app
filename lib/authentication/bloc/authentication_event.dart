@@ -18,7 +18,9 @@ final class _AuthenticationStatusChanged extends AuthenticationEvent {
   List<Object> get props => [status];
 }
 
-final class AuthenticationLogoutRequested extends AuthenticationEvent {}
+final class AuthenticationLogoutRequested extends AuthenticationEvent {
+  
+}
 
 final class AuthenticationGroupSelected extends AuthenticationEvent {
   const AuthenticationGroupSelected({required this.group});

@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:vhome_web_api/src/models/models.dart';
 
-part 'user.g.dart';
+part 'auth_model.g.dart';
 
 class Uint8ListConverter implements JsonConverter<Uint8List, dynamic> {
   const Uint8ListConverter();
@@ -20,25 +20,27 @@ class Uint8ListConverter implements JsonConverter<Uint8List, dynamic> {
 }
 
 @JsonSerializable(explicitToJson: true)
-class User extends Equatable {
-  const User({
+class AuthModel extends Equatable {
+  const AuthModel({
     required this.id,
     required this.username,
-    required this.createdTime,
+    required this.token,
     required this.picture,
+    this.isGroupSelected = false,
   });
   
-  factory User.fromJson(JsonMap json) 
-    => _$UserFromJson(json);
+  factory AuthModel.fromJson(JsonMap json, {bool isGroupSelected = false}) 
+    => _$AuthModelFromJson(json, isGroupSelected);
 
-  JsonMap toJson() => _$UserToJson(this);
+  JsonMap toJson() => _$AuthModelToJson(this);
 
   final int id;
   final String username;
-  final DateTime createdTime;
+  final String token;
+  final bool isGroupSelected;
   @Uint8ListConverter()
   final Uint8List picture;
 
   @override
-  List<Object> get props => [id, username, createdTime, picture];
+  List<Object> get props => [id, username, token, isGroupSelected, picture];
 }

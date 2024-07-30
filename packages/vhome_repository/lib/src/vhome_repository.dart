@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:vhome_web_api/vhome_web_api.dart';
 
 enum AuthState {
@@ -15,12 +16,12 @@ class VhomeRepository {
     required GroupApi groupApi,
     required TasksetApi tasksetApi,
     required TaskApi taskApi,
-    required UserApi userApi,
+    required AuthApi authApi,
   }) : _deviceApi = deviceApi,
        _groupApi = groupApi,
        _tasksetApi = tasksetApi,
        _taskApi = taskApi,
-       _userApi = userApi {
+       _authApi = authApi {
         _authStateController.add(AuthState.unauthenticated);
        }
 
@@ -28,10 +29,10 @@ class VhomeRepository {
   final GroupApi _groupApi;
   final TasksetApi _tasksetApi;
   final TaskApi _taskApi;
-  final UserApi _userApi;
+  final AuthApi _authApi;
 
   final _authStateController = StreamController<AuthState>();
-  User? _user;
+  AuthModel? _user;
 
   // Auth
 
@@ -42,11 +43,11 @@ class VhomeRepository {
     yield* _authStateController.stream;
   }
 
-  Future<User?> tryGetUser() async => _user;
+  Future<AuthModel?> tryGetUser() async => _user;
   
   Future<bool> loginUser(String username, String password) async {
     _authStateController.add(AuthState.pending);
-    _user = await _userApi.getAuthToken(username, password);
+    _user = await _authApi.getAuthToken(username, password);
     _authStateController.add(
       _user != null ?
         AuthState.groupUnselected :
@@ -58,7 +59,7 @@ class VhomeRepository {
 
   Future<void> selectGroup(int groupId) async {
     _authStateController.add(AuthState.pending);
-    _user = await _userApi.selectGroup(_user!.token, groupId);
+    _user = await _authApi.selectGroup(_user!.token, groupId);
     _authStateController.add(
       (_user != null && _user!.isGroupSelected) ?
         AuthState.groupSelected :
@@ -68,7 +69,7 @@ class VhomeRepository {
 
   Future<void> unselectGroup() async {
     _authStateController.add(AuthState.pending);
-    _user = await _userApi.unselectGroup(_user!.token);
+    _user = await _authApi.unselectGroup(_user!.token);
     _authStateController.add(
       _user != null ?
         AuthState.groupUnselected :
@@ -79,7 +80,7 @@ class VhomeRepository {
 
   Future<void> logout() async {
     _authStateController.add(AuthState.pending);
-    _user = await _userApi.logout(_user!.token);
+    await _authApi.logout(_user!.token);
     _authStateController.add(AuthState.unauthenticated);
   }
 
@@ -107,5 +108,10 @@ class VhomeRepository {
 
   Stream<List<Group>> getGroups() => _groupApi.getGroups(_user!.token);
 
+  // User
+
+  Future<Uint8List> getUserPicture(int id) => _authApi.getUserPicture(_user!.token, id);
+
+  // dispose
   void dispose() => _authStateController.close();
 }

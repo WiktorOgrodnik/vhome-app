@@ -35,23 +35,21 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
       _AuthenticationStatusChanged event,
       Emitter<AuthenticationState> emit
     ) async {
+      final user = await _repository.tryGetUser();
       switch (event.status) {
         case AuthState.unauthenticated:
-          return emit(const AuthenticationState.unauthenticated());
+          return emit(AuthenticationState.unauthenticated(user));
         case AuthState.groupUnselected:
-          final user = await _repository.tryGetUser();
           return emit(
             user != null
               ? AuthenticationState.groupUnselected(user)
-              : const AuthenticationState.unauthenticated()
+              : AuthenticationState.unauthenticated(user)
           );
         case AuthState.groupSelected:
-          final user = await _repository.tryGetUser();
-
           return emit(
             user != null ?
               AuthenticationState.groupSelected(user) :
-              const AuthenticationState.unauthenticated()
+              AuthenticationState.unauthenticated(user)
           );
         default:
           return emit(const AuthenticationState.pending());
