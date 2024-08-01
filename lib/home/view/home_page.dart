@@ -5,6 +5,8 @@ import 'package:vhome_frontend/home/cubit/home_cubit.dart';
 import 'package:vhome_frontend/home/view/view.dart';
 import 'package:vhome_frontend/settings/views/views.dart';
 import 'package:vhome_frontend/tasksets_page/view/view.dart';
+import 'package:vhome_frontend/users_bloc/users_bloc.dart';
+import 'package:vhome_repository/vhome_repository.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -15,8 +17,12 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => HomeCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => HomeCubit()),
+        BlocProvider(create: (_) => 
+          UsersBloc(repository: context.read<VhomeRepository>())..add(UsersSubscriptionRequested())),
+      ],
       child: const HomeView(),
     );
   }
@@ -47,20 +53,31 @@ class HomeView extends StatelessWidget {
         title: Text("Vhome"),
         backgroundColor: theme.colorScheme.surfaceContainer,
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          if (constraints.maxWidth < 500) {
-            return HomePageMobile(
-              index: selectedPage.index,
-              child: page,
-            );
-          } else {
-            return HomePageDesktop(
-              index: selectedPage.index,
-              child: page,
-            );
+      body: BlocListener<UsersBloc, UsersState>(
+        listenWhen: (previous, current) => 
+          previous.status != current.status &&
+          current.status == UsersStatus.failure,
+        listener: (context, state) =>
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+                SnackBar(content: Text("Failed to fetch Users."))
+              ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth < 500) {
+              return HomePageMobile(
+                index: selectedPage.index,
+                child: page,
+              );
+            } else {
+              return HomePageDesktop(
+                index: selectedPage.index,
+                child: page,
+              );
+            }
           }
-        }
+        ),
       )
     );
   }

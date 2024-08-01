@@ -9,22 +9,14 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.select((AuthenticationBloc bloc) => bloc.state.user);
+    final user = context.select((AuthenticationBloc bloc) => bloc.state.data);
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20), 
         child: Column(
           children: [
             SizedBox(height: 25),
-            SizedBox(
-              width: 150,
-              height: 150,
-              child: CircleAvatar(
-                backgroundImage: user != null
-                    ? MemoryImage(user.picture)
-                    : null,
-              ),
-            ),
+            UserProfilePicture(id: user?.id ?? 0, size: 150.0),
             SizedBox(height: 25),
             SectionTitle(child: Text(user?.username ?? "_")),
             SizedBox(height: 25),

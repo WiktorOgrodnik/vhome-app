@@ -10,6 +10,7 @@ void main() {
   final tasksetApi = TasksetApi();
   final taskApi = TaskApi();
   final authApi = AuthApi();
+  final userApi = UserApi();
 
   VhomeRepository vhomeRepository = VhomeRepository(
     deviceApi: deviceApi,
@@ -17,6 +18,7 @@ void main() {
     tasksetApi: tasksetApi,
     taskApi: taskApi,
     authApi: authApi,
+    userApi: userApi,
   );
 
   runApp(App(repository: vhomeRepository));

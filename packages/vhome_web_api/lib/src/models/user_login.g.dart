@@ -1,23 +1,19 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'auth_model.dart';
+part of 'user_login.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-AuthModel _$AuthModelFromJson(Map<String, dynamic> json, bool isGroupSelected) => AuthModel(
+UserLogin _$UserLoginFromJson(Map<String, dynamic> json) => UserLogin(
       id: (json['id'] as num).toInt(),
       username: json['username'] as String,
       token: json['token'] as String,
-      picture: const Uint8ListConverter().fromJson(json['picture']),
-      isGroupSelected: isGroupSelected,
     );
 
-Map<String, dynamic> _$AuthModelToJson(AuthModel instance) => <String, dynamic>{
+Map<String, dynamic> _$UserLoginToJson(UserLogin instance) => <String, dynamic>{
       'id': instance.id,
       'username': instance.username,
       'token': instance.token,
-      'isGroupSelected': instance.isGroupSelected,
-      'picture': const Uint8ListConverter().toJson(instance.picture),
     };

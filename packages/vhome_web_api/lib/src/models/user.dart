@@ -21,6 +21,7 @@ class User extends Equatable {
 
   final int id;
   final String username;
+  @JsonKey(name: 'created_at')
   final DateTime createdTime;
   @Uint8ListConverter()
   final Uint8List picture;

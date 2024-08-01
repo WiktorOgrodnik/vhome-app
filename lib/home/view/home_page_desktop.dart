@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vhome_frontend/authentication/bloc/authentication_bloc.dart';
 import 'package:vhome_frontend/home/cubit/home_cubit.dart';
+import 'package:vhome_frontend/widgets/widgets.dart';
 
 class HomePageDesktop extends StatelessWidget {
   HomePageDesktop({required this.index, required this.child});
@@ -12,7 +13,7 @@ class HomePageDesktop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final user = context.select((AuthenticationBloc bloc) => bloc.state.user);
+    final user = context.select((AuthenticationBloc bloc) => bloc.state.data);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -34,7 +35,7 @@ class HomePageDesktop extends StatelessWidget {
                   ),
                   NavigationRailDestination(
                     icon: Icon(Icons.settings),
-                    label: Text("settings"),
+                    label: Text("Settings"),
                   ),
                 ],
                 selectedIndex: index,
@@ -52,15 +53,7 @@ class HomePageDesktop extends StatelessWidget {
                       children: [
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: SizedBox(
-                            width: 50,
-                            height: 50,
-                            child: CircleAvatar(
-                              backgroundImage: user != null 
-                                ? MemoryImage(user.picture)
-                                : null,
-                            ),
-                          ),
+                          child: UserProfilePicture(id: user?.id ?? 0, size: 50.0),
                         ),
                         if (constraints.maxWidth >= 1150)
                           Padding(
