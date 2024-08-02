@@ -10,6 +10,7 @@ class UserLogin extends Equatable {
     required this.id,
     required this.username,
     required this.token,
+    this.group,
   });
   
   factory UserLogin.fromJson(JsonMap json) 
@@ -20,7 +21,8 @@ class UserLogin extends Equatable {
   final int id;
   final String username;
   final String token;
+  final String? group;
 
   @override
-  List<Object> get props => [id, username, token];
+  List<Object?> get props => [id, username, token, group];
 }

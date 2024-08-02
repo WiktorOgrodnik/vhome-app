@@ -27,4 +27,17 @@ class GroupApi {
 
     return fetchedGroups;
   }
-}
+
+  Future<String> generateInvitationCode(String token) async {
+    final uri = Uri.parse("$apiUrl/group/generate_invitation");
+    final response = await http.post(uri, headers: { 'Authorization': token } );
+    
+
+    if (response.statusCode != HttpStatus.created) {
+      throw Exception('Can not create invitation code');
+    }
+
+    return response.body;
+  }
+
+  }

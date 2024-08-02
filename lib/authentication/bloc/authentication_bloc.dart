@@ -16,6 +16,7 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthState> {
       on<AuthenticationGroupSelected>(_onAuthenticationGroupSelected);
       on<AuthenticationGroupUnselectionRequested>(_onAuthenticationGroupUnselectionRequested);
       on<AuthenticationLogoutRequested>(_onAuthenticationLogoutRequested);
+      on<AuthenticationGroupLeaveRequested>(_onAuthenticationGroupLeaveRequested);
       _authStateSubscription = _repository.authStream.listen(
         (state) => add(_AuthenticationStateChanged(state: state)),
       );
@@ -67,5 +68,12 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthState> {
       Emitter<AuthState> emit,
     ) {
       unawaited(_repository.logout());
+    }
+
+    void _onAuthenticationGroupLeaveRequested(
+      AuthenticationGroupLeaveRequested event,
+      Emitter<AuthState> emit,
+    ) {
+      unawaited(_repository.leaveGroup());
     }
   }

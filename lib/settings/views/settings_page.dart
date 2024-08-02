@@ -2,8 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vhome_frontend/authentication/bloc/authentication_bloc.dart';
+import 'package:vhome_frontend/settings/bloc/settings_bloc.dart';
+import 'package:vhome_frontend/settings/views/settings_group_inivitation.dart';
 import 'package:vhome_frontend/users/view/view.dart';
 import 'package:vhome_frontend/widgets/widgets.dart';
+import 'package:vhome_repository/vhome_repository.dart';
 
 class SettingsItem {
   const SettingsItem({
@@ -28,8 +31,59 @@ class SettingsGroup {
 }
 
 class SettingsPage extends StatelessWidget {
-  SettingsPage({super.key});
+  const SettingsPage({super.key});
 
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => SettingsBloc(repository: context.read<VhomeRepository>()),
+      child: const SettingsListener()
+    );
+  }
+}
+
+class SettingsListener extends StatelessWidget {
+  const SettingsListener({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<SettingsBloc, SettingsState>(
+          listenWhen: (previous, current) =>
+            previous.status != current.status &&
+            current.status == SettingsStatus.error,
+          listener: (context, state) {
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  content: Text("Failed to generate invitation code."),
+                ),
+              );
+
+            context
+              .read<SettingsBloc>()
+              .add(SettingsOverviewReturned());
+          },
+        )
+      ],
+      child: BlocBuilder<SettingsBloc, SettingsState>(
+        builder: (context, state) {
+          switch (state.status) {
+            case SettingsStatus.invitation:
+              return const SettingsGroupInivitationPage();
+            default:
+              return const SettingsView();
+          }
+        },
+      ),
+    );
+  }
+}
+
+class SettingsView extends StatelessWidget {
+  const SettingsView({super.key});
   
   @override
   Widget build(BuildContext context) {
@@ -37,16 +91,32 @@ class SettingsPage extends StatelessWidget {
 
     final List<SettingsGroup> settings = [
       SettingsGroup(
-        title: "Your Group",
+        title: "${user?.group} Group",
         items: [
           SettingsItem(
             title: "Group users",
-            icon: Icons.verified_user,
+            icon: Icons.contacts,
             onTap: () => 
               Navigator.of(context).push(
                 UsersPage.route()
               ),
-          )
+          ),
+          SettingsItem(
+            title: "Send invitation code",
+            icon: Icons.send,
+            onTap: () =>
+              context
+                .read<SettingsBloc>()
+                .add(SettingsInvitationCodeRequested())
+          ),
+          SettingsItem(
+            title: "Leave group",
+            icon: Icons.logout,
+            onTap: () =>
+              context
+                .read<AuthenticationBloc>()
+                .add(AuthenticationGroupLeaveRequested()),
+          ),
         ]
       ),
       SettingsGroup(
@@ -54,7 +124,7 @@ class SettingsPage extends StatelessWidget {
         items: [
           SettingsItem(
             title: "Change group",
-            icon: Icons.change_circle,
+            icon: Icons.change_circle_outlined,
             onTap: () =>
               context
                 .read<AuthenticationBloc>()
@@ -76,19 +146,21 @@ class SettingsPage extends StatelessWidget {
       alignment: Alignment.topCenter,
       child: SizedBox(
         width: 1000,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20), 
-          child: Column(
-            children: [
-              SizedBox(height: 25),
-              UserProfilePicture(id: user?.id ?? 0, size: 150.0),
-              SizedBox(height: 25),
-              SectionTitle(child: Text(user?.username ?? "_")),
-              SizedBox(height: 25),
-              SettingsListGroup(settings: settings[0]),
-              SizedBox(height: 25),
-              SettingsListGroup(settings: settings[1]),
-            ],
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20), 
+            child: Column(
+              children: [
+                SizedBox(height: 25),
+                UserProfilePicture(id: user?.id ?? 0, size: 150.0),
+                SizedBox(height: 25),
+                SectionTitle(child: Text(user?.username ?? "_")),
+                SizedBox(height: 25),
+                SettingsListGroup(settings: settings[0]),
+                SizedBox(height: 25),
+                SettingsListGroup(settings: settings[1]),
+              ],
+            ),
           ),
         ),
       ),

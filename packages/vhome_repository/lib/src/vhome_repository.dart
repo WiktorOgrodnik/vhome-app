@@ -98,6 +98,35 @@ class VhomeRepository {
     );
   }
 
+  Future<void> leaveGroup() async {
+    _authStateController.update(const AuthState.pending());
+    final data = await _authApi.leaveGroup(_authStateController.token);
+    _authStateController.update(
+      data != null
+        ? AuthState.groupUnselected(data)
+        : const AuthState.unauthenticated()
+    );
+  }
+
+  Future<void> addGroup(String name) async {
+    _authStateController.update(const AuthState.pending());
+    final data = await _authApi.addGroup(_authStateController.token, name);
+    _authStateController.update(
+      data != null
+        ? AuthState.groupSelected(data)
+        : const AuthState.unauthenticated()
+    );
+  }
+
+  Future<void> acceptInvitation(String invitation) async {
+    _authStateController.update(const AuthState.pending());
+    final data = await _authApi.acceptInvitation(_authStateController.token, invitation);
+    _authStateController.update(
+      data != null
+        ? AuthState.groupSelected(data)
+        : const AuthState.unauthenticated()
+    );
+  }
 
   Future<void> logout() async {
     _authStateController.update(const AuthState.pending());
@@ -140,6 +169,8 @@ class VhomeRepository {
 
   Stream<List<Group>> getGroups()
     => _groupApi.getGroups(_authStateController.token);
+  Future<String> generateInvitationCode()
+    => _groupApi.generateInvitationCode(_authStateController.token);
 
   // User
 

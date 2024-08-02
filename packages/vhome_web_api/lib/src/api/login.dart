@@ -39,9 +39,9 @@ class AuthApi {
     var uri = Uri.parse("$apiUrl/group/unselect");
     var response = await get(uri, headers: { 'Authorization': token });
 
-    return response.statusCode == 200 ?
-      UserLogin.fromJson(jsonDecode(response.body)) :
-      null;
+    return response.statusCode == 200
+      ? UserLogin.fromJson(jsonDecode(response.body))
+      : null;
   }
 
   Future<UserLogin?> logout(String token) async {
@@ -49,5 +49,44 @@ class AuthApi {
     await get(uri, headers: { 'Authorization': token });
 
     return null;
+  }
+
+  Future<UserLogin?> addGroup(String token, String name) async {
+    final uri = Uri.parse("$apiUrl/groups");
+    final response = await post(
+      uri, 
+      headers: { 
+        'Authorization': token,
+        'Accept': 'application/json',
+        'content-type': 'application/json',
+      },
+      body: jsonEncode({ 'name': name }),
+    );
+
+    return response.statusCode == 200
+      ? UserLogin.fromJson(jsonDecode(response.body))
+      : null;
+  }
+
+  Future<UserLogin?> acceptInvitation(String token, String invitation) async {
+    final uri = Uri.parse("$apiUrl/group/accept");
+    final response = await post(
+      uri, 
+      headers: { 'Authorization': token },
+      body: invitation,
+    );
+
+    return response.statusCode == 200
+      ? UserLogin.fromJson(jsonDecode(response.body))
+      : null;
+  }
+
+  Future<UserLogin?> leaveGroup(String token) async {
+    final uri = Uri.parse("$apiUrl/group/leave");
+    final response = await post(uri, headers: { 'Authorization': token } );
+
+    return response.statusCode == 200
+      ? UserLogin.fromJson(jsonDecode(response.body))
+      : null;
   }
 }

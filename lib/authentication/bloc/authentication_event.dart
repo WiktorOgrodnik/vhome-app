@@ -30,3 +30,5 @@ final class AuthenticationGroupSelected extends AuthenticationEvent {
 }
 
 final class AuthenticationGroupUnselectionRequested extends AuthenticationEvent {}
+
+final class AuthenticationGroupLeaveRequested extends AuthenticationEvent {}
