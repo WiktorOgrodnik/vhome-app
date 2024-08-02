@@ -10,6 +10,7 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
       required VhomeRepository repository,
     }) : _repository = repository, super(UsersState()) {
     on<UsersSubscriptionRequested>(_onUsersSubscriptionRequested);
+    on<UserTaskAssigned>(_onUserTaskAssigned);
   }
 
   final VhomeRepository _repository;
@@ -30,5 +31,18 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
         status: () => UsersStatus.failure,
       ),
     );
+  }
+
+  Future<void> _onUserTaskAssigned(
+    UserTaskAssigned event,
+    Emitter<UsersState> emit,
+  ) async {
+    try {
+      await _repository.changeAssign(event.task, event.user, event.value);
+    } catch (error) {
+      print(error);
+    }
+
+    _repository.refreshUsers();
   }
 }

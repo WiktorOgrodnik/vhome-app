@@ -1,10 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formz/formz.dart';
-import 'package:vhome_frontend/add_device/models/device_name.dart';
 import 'package:vhome_frontend/add_device/models/models.dart';
 import 'package:vhome_repository/vhome_repository.dart';
-import 'package:vhome_web_api/vhome_web_api.dart';
 
 part 'add_device_event.dart';
 part 'add_device_state.dart';

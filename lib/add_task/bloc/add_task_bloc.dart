@@ -10,11 +10,20 @@ part 'add_task_state.dart';
 class AddTaskBloc extends Bloc<AddTaskEvent, AddTaskState> {
   AddTaskBloc({
     required VhomeRepository repository,
-    required Taskset taskset,
-  }) : _repository = repository, super(AddTaskState(taskset: taskset)) {
+    Taskset? taskset,
+    Task? task,
+  }) : _repository = repository,
+      super(AddTaskState(
+              id: task != null ? task.id : taskset!.id,
+              title: task != null ? TaskTitle.dirty(task.title) : TaskTitle.pure(),
+              content: task != null ? Content.dirty(task.content) : Content.pure(),
+              edit: task != null,
+            )
+      ) {
     on<AddTaskSubmitted>(_onSubmitted);
     on<AddTaskTitleChanged>(_onTitleChanged);
     on<AddTaskContentChanged>(_onContentChanged);
+    on<TaskDeleted>(_onTaskDeleted);
   }
 
   final VhomeRepository _repository;
@@ -45,24 +54,48 @@ class AddTaskBloc extends Bloc<AddTaskEvent, AddTaskState> {
     );
   }
 
+  Future<void> _onTaskDeleted(
+    TaskDeleted event,
+    Emitter<AddTaskState> emit,
+  ) async {
+    await _repository.deleteTask(event.task);
+    emit(state.copyWith(status: AddDeviceStatus.deleted));
+  }
+
 
   Future<void> _onSubmitted(
     AddTaskSubmitted event,
     Emitter<AddTaskState> emit,
   ) async {
+    print(state.edit);
 
-    final task = Task(
-      title: state.title.value,
-      content: state.content.value,
-      tasksetId: state.taskset.id,
-      taskAssigned: [],
-    );
+    final task = state.edit
+      ? Task(
+          id: state.id,
+          title: state.title.value,
+          content: state.content.value,
+          taskAssigned: const [],
+        )
+      : Task(
+          title: state.title.value,
+          content: state.content.value,
+          tasksetId: state.id,
+          taskAssigned: [],
+        );
+
+    print(task.id);
 
     try {
-      await _repository.addTask(task);
-      emit(state.copyWith(status: FormzSubmissionStatus.success));
+      
+      if (state.edit) {
+        await _repository.editTask(task);
+      } else {
+        await _repository.addTask(task);
+      }
+
+      emit(state.copyWith(formStatus: FormzSubmissionStatus.success));
     } catch (_) {
-      emit(state.copyWith(status: FormzSubmissionStatus.failure));
+      emit(state.copyWith(formStatus: FormzSubmissionStatus.failure));
     }
   }
 

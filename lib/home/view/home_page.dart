@@ -5,7 +5,7 @@ import 'package:vhome_frontend/home/cubit/home_cubit.dart';
 import 'package:vhome_frontend/home/view/view.dart';
 import 'package:vhome_frontend/settings/views/views.dart';
 import 'package:vhome_frontend/tasksets_page/view/view.dart';
-import 'package:vhome_frontend/users_bloc/users_bloc.dart';
+import 'package:vhome_frontend/users/users.dart';
 import 'package:vhome_repository/vhome_repository.dart';
 
 class HomePage extends StatelessWidget {

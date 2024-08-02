@@ -11,7 +11,7 @@ class Task extends Equatable {
     required this.title,
     required this.content,
     this.completed = false,
-    required this.tasksetId,
+    this.tasksetId = 0,
     required this.taskAssigned,
   });
 

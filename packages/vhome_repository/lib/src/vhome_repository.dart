@@ -120,8 +120,12 @@ class VhomeRepository {
     => _taskApi.getTasks(_authStateController.token, tasksetId);
   Future<void> toggleTaskCompletion(Task task, bool value)
     => _taskApi.changeCompleted(_authStateController.token, task, value);
+  Future<void> changeAssign(Task task, User user, bool value)
+    => _taskApi.changeAssign(_authStateController.token, task, user, value);
   Future<void> addTask(Task task)
     => _taskApi.add(_authStateController.token, task.tasksetId, task.title, task.content);
+  Future<void> editTask(Task task)
+    => _taskApi.edit(_authStateController.token, task);
   Future<void> deleteTask(Task task)
     => _taskApi.delete(_authStateController.token, task);
 
@@ -141,6 +145,9 @@ class VhomeRepository {
 
   Stream<List<User>> getUsers()
     => _userApi.getUsers(_authStateController.token);
+  void refreshUsers()
+    => _userApi.refreshUsers();
+  
 
   // dispose
 

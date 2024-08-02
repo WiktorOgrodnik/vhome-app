@@ -12,7 +12,7 @@ class TasksetDetailsAddTaskButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: () async {
         await Navigator.of(context).push(
-          AddTaskPage.route(taskset)
+          AddTaskPage.route(taskset: taskset)
         );
       },
       child: Center(

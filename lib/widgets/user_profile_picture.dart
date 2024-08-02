@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:vhome_frontend/users_bloc/users_bloc.dart';
+import 'package:vhome_frontend/users/users.dart';
 import 'package:vhome_frontend/widgets/widgets.dart';
 
 class UserProfilePicture extends StatelessWidget {

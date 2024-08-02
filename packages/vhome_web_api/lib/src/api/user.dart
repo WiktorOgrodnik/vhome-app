@@ -52,4 +52,8 @@ class UserApi {
     return Future.wait(responseData.map((userMap) async 
         => User.fromJson(await _combineWithPicture(token, userMap))));
   }
+
+  void refreshUsers() {
+    _usersOutdated.add(null);
+  }
 }

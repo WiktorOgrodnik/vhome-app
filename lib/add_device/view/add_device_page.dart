@@ -4,7 +4,6 @@ import 'package:formz/formz.dart';
 import 'package:vhome_frontend/add_device/add_device.dart';
 import 'package:vhome_frontend/widgets/widgets.dart';
 import 'package:vhome_repository/vhome_repository.dart';
-import 'package:vhome_web_api/vhome_web_api.dart';
 
 enum AddDeviceTypeLabel {
   other('---', DeviceType.other),
@@ -68,7 +67,6 @@ class AddDevicePage extends StatelessWidget {
         },
       ),
     );
-
   }
 }
 

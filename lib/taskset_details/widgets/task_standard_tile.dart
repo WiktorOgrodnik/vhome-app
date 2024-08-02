@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vhome_frontend/add_task/view/view.dart';
 import 'package:vhome_frontend/taskset_details/bloc/taskset_details_bloc.dart';
 import 'package:vhome_frontend/widgets/widgets.dart';
 import 'package:vhome_web_api/vhome_web_api.dart';
@@ -45,20 +47,13 @@ class TaskStandardTile extends StatelessWidget {
             decorationColor: theme.colorScheme.onPrimary,
           ) : null,
         ),
-        trailing: editable 
-          ? IconButton(
-              icon: Icon(
-                Icons.delete,
-                color: theme.colorScheme.onPrimary,
-              ),
-              onPressed: () =>
-                context
-                  .read<TasksetDetailsBloc>()
-                  .add(TaskDeleted(task: task)),
-            ) 
-          : UserAssignMultiIcon(taskAssignes: task.taskAssigned),
+        trailing: UserAssignMultiIcon(taskAssignes: task.taskAssigned),
         tileColor: theme.colorScheme.primary,
         textColor: theme.colorScheme.onPrimary,
+        onTap: () => 
+          Navigator.of(context).push(
+            AddTaskPage.route(task: task)
+          ),
       ),
     );
   }

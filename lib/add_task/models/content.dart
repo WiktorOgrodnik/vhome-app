@@ -1,6 +1,6 @@
 import 'package:formz/formz.dart';
 
-enum ContentValidationError { empty }
+enum ContentValidationError { none }
 
 class Content extends FormzInput<String, ContentValidationError> {
   const Content.pure() : super.pure('');
@@ -8,7 +8,6 @@ class Content extends FormzInput<String, ContentValidationError> {
 
   @override
   ContentValidationError? validator(String value) {
-    if (value.isEmpty) return ContentValidationError.empty;
     return null;
   }
 }
