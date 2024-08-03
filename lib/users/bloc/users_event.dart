@@ -25,3 +25,5 @@ final class UserTaskAssigned extends UsersEvent {
   @override
   List<Object> get props => [task, user, value];
 }
+
+final class UsersUploadProfilePictureRequested extends UsersEvent {}

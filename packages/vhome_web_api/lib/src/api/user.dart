@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:vhome_web_api/vhome_web_api.dart';
 import 'package:http/http.dart' as http;
@@ -19,12 +20,16 @@ class UserApi {
   Future<Uint8List> _getUserPicture(String token, int id) async {
     final uri = Uri.parse("$apiUrl/user/$id/picture");
     final response = await http.get(uri, headers: { 'Authorization': token });
-    
-    if (response.statusCode != 200) {
-      throw Exception("Can not get user picture");
+
+    if (![HttpStatus.ok, HttpStatus.noContent].contains(response.statusCode)) {
+      throw Exception("Error while fetching user picture!");
     }
 
-    return response.bodyBytes;
+    final bytes = response.statusCode == HttpStatus.ok
+        ? response.bodyBytes
+        : await File.fromUri(Uri.parse("assets/profile_picture.png")).readAsBytes();
+    
+    return bytes;
   }
 
   Future<JsonMap> _combineWithPicture(String token, JsonMap data) async {
@@ -51,6 +56,44 @@ class UserApi {
     
     return Future.wait(responseData.map((userMap) async 
         => User.fromJson(await _combineWithPicture(token, userMap))));
+  }
+
+  Future<void> registerUser(String username, String password) async {
+    final uri = Uri.parse("$apiUrl/register");
+    final response = await http.post(
+      uri,
+      body: jsonEncode({
+        'username': username,
+        'password': password,
+      }),
+      headers: {
+        "content-type": "application/json"
+      },
+    );
+
+    print(response.statusCode);
+
+    if (response.statusCode != HttpStatus.created) {
+      throw Exception("Could not register user!");
+    }
+  }
+
+  Future<void> uploadUserPicture(String token, Uint8List data) async {
+    final uri = Uri.parse("$apiUrl/user/picture");
+    final response = await http.post(
+      uri,
+      headers: {
+        'Authorization': token,
+        'Content-Type': 'image/png'
+      },
+      body: data,
+    );
+
+    if (response.statusCode != HttpStatus.ok) {
+      throw Exception('Failed to upload user picture');
+    }
+
+    _usersOutdated.add(null);
   }
 
   void refreshUsers() {

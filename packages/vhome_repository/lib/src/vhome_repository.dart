@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:vhome_repository/src/auth_state.dart';
 import 'package:vhome_web_api/vhome_web_api.dart';
 
@@ -76,6 +77,21 @@ class VhomeRepository {
     );
 
     return data != null;
+  }
+
+  Future<void> registerUser(String username, String password, Uint8List? picture) async {
+    await _userApi.registerUser(username, password);
+
+    final data = await _authApi.getAuthToken(username, password);
+    if (data == null) {
+      throw Exception("Could not verify user log in");
+    }
+
+    if (picture != null) {
+      await _userApi.uploadUserPicture(data.token, picture);
+    }
+
+    await _authApi.logout(data.token);
   }
 
   Future<void> selectGroup(int groupId) async {
@@ -176,6 +192,8 @@ class VhomeRepository {
 
   Stream<List<User>> getUsers()
     => _userApi.getUsers(_authStateController.token);
+  Future<void> uploadProfilePicture(Uint8List data)
+    => _userApi.uploadUserPicture(_authStateController.token, data);
   void refreshUsers()
     => _userApi.refreshUsers();
   

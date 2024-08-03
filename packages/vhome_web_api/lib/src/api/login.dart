@@ -20,7 +20,6 @@ class AuthApi {
       },
     );
 
-
     return response.statusCode == 200
         ? UserLogin.fromJson(jsonDecode(response.body))
         : null;

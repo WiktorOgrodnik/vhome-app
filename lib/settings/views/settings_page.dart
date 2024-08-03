@@ -1,9 +1,12 @@
 
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:vhome_frontend/authentication/bloc/authentication_bloc.dart';
 import 'package:vhome_frontend/settings/bloc/settings_bloc.dart';
 import 'package:vhome_frontend/settings/views/settings_group_inivitation.dart';
+import 'package:vhome_frontend/users/bloc/users_bloc.dart';
 import 'package:vhome_frontend/users/view/view.dart';
 import 'package:vhome_frontend/widgets/widgets.dart';
 import 'package:vhome_repository/vhome_repository.dart';
@@ -84,7 +87,8 @@ class SettingsListener extends StatelessWidget {
 
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key});
-  
+
+    
   @override
   Widget build(BuildContext context) {
     final user = context.select((AuthenticationBloc bloc) => bloc.state.data);
@@ -152,7 +156,27 @@ class SettingsView extends StatelessWidget {
             child: Column(
               children: [
                 SizedBox(height: 25),
-                UserProfilePicture(id: user?.id ?? 0, size: 150.0),
+                Stack(
+                  children: [
+                    UserProfilePicture(id: user?.id ?? 0, size: 150.0),
+                    Positioned(
+                      bottom: 0.0,
+                      right: 0.0,
+                      child: Container(
+                        decoration: ShapeDecoration(
+                          color: Colors.grey,
+                          shape: CircleBorder(),
+                        ),
+                        child: IconButton(
+                          onPressed: () =>
+                            context
+                              .read<UsersBloc>()
+                              .add(UsersUploadProfilePictureRequested()),
+                          icon: Icon(Icons.edit_rounded),
+                        ),
+                      ),
+                    )
+                  ]),
                 SizedBox(height: 25),
                 SectionTitle(child: Text(user?.username ?? "_")),
                 SizedBox(height: 25),

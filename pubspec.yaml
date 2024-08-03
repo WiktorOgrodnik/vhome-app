@@ -29,6 +29,9 @@ dependencies:
   tuple: ^2.0.2
   formz: ^0.7.0
   multi_dropdown: ^2.1.4
+  image_picker: ^1.1.2
+  file_selector_linux: ^0.9.2+1
+  file_selector: ^1.0.3
 
 dev_dependencies:
   flutter_test:
@@ -38,3 +41,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/profile_picture.png

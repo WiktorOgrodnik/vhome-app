@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vhome_frontend/login_page/bloc/login_bloc.dart';
 import 'package:vhome_frontend/login_page/view/view.dart';
+import 'package:vhome_frontend/register/view/view.dart';
 import 'package:vhome_repository/vhome_repository.dart';
 
 class LoginPage extends StatelessWidget {
@@ -42,7 +43,18 @@ class LoginPage extends StatelessWidget {
                     create: (context) => 
                       LoginBloc(repository: context.read<VhomeRepository>()),
                     child: const LoginForm(),
-                  )
+                  ),
+                  const Spacer(flex: 2),
+                  Padding(
+                    padding: const EdgeInsets.all(25.0),
+                    child: ElevatedButton(
+                      onPressed: () =>
+                        Navigator.of(context).push(
+                          RegisterPage.route(),
+                        ),
+                      child: Text("Create new account"),
+                    ),
+                  ),
                 ],
               ),
             ),
