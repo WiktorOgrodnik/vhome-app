@@ -14,31 +14,26 @@ class TaskApi {
     _tasksOutdated$.switchMap((_) => 
       Stream.fromFuture(_fetchTasks(token, tasksetId))).asBroadcastStream();
 
+  Future<Task> _taskFromJsonWithAssigns(String token, JsonMap taskMap) async {
+    final id = taskMap['id'];
+    final uri = Uri.parse("$apiUrl/task/$id/assign");
+    final response = await http.get(uri, headers: { 'Authorization': token });
+
+    final JsonMap responseData = response.statusCode == HttpStatus.ok 
+        ? jsonDecode(response.body)
+        : {};
+
+    responseData.addAll(taskMap);
+    return Task.fromJson(responseData);
+  }
+
   Future<List<Task>> _fetchTasks(String token, int tasksetId) async {
     final uri = Uri.parse("$apiUrl/tasks/$tasksetId");
     final response = await http.get(uri, headers: {'Authorization': token} );
     final List<dynamic> responseData = response.statusCode == HttpStatus.ok ?
       jsonDecode(utf8.decode(response.bodyBytes)) : [];
 
-    return responseData.map((x) => Task.fromJson(x)).toList(); 
-  }
-
-  Future<List<Task>> getTasksOld(String token, int tasksetId, {int? limit}) async {
-    final data = await _fetchTasksOld(token, tasksetId) ?? {};
-    final iter = data.entries.map((x) => x.value);
-    
-    return limit == null ? iter.toList() : iter.take(limit).toList();
-  }
-
-  Future<Map<int, Task>?> _fetchTasksOld(String token, int tasksetId) async {
-    final uri = Uri.parse("$apiUrl/tasks/$tasksetId");
-    final response = await http.get(uri, headers: {'Authorization': token} );
-    final List<dynamic> responseData = response.statusCode == HttpStatus.ok ?
-      jsonDecode(utf8.decode(response.bodyBytes)) : [];
-
-    final data = responseData.map((x) => Task.fromJson(x));
-
-    return { for (var v in data) v.id: v };
+    return Future.wait(responseData.map((x) => _taskFromJsonWithAssigns(token, x))); 
   }
 
   Future<void> changeCompleted(String token, Task task, bool value) async {
@@ -46,10 +41,24 @@ class TaskApi {
       Uri.parse("$apiUrl/task/${task.id}/completed") :
       Uri.parse("$apiUrl/task/${task.id}/uncompleted");
 
-    final response = await http.put(uri, headers: {'Authorization': token} );
+    final response = await http.put(uri, headers: { 'Authorization': token });
 
     if (response.statusCode != HttpStatus.ok) {
       throw Exception("Cannot toggle completition of the task");
+    }
+
+    _tasksOutdated$.add(null);
+  }
+
+  Future<void> changeAssign(String token, Task task, User user, bool value) async {
+    final uri = value ? 
+      Uri.parse("$apiUrl/task/${task.id}/assign/${user.id}") :
+      Uri.parse("$apiUrl/task/${task.id}/unassign/${user.id}");
+
+    final response = await http.put(uri, headers: { 'Authorization': token });
+
+    if (response.statusCode != HttpStatus.ok) {
+      throw Exception("Cannot toggle assign of the task");
     }
 
     _tasksOutdated$.add(null);
@@ -71,6 +80,27 @@ class TaskApi {
 
     if (response.statusCode != HttpStatus.created) {
       throw Exception("Can not add the task");
+    }
+
+    _tasksOutdated$.add(null);
+  }
+
+  Future<void> edit(String token, Task task) async {
+    final uri = Uri.parse("$apiUrl/task/${task.id}");
+    final payload = jsonEncode({ "title": task.title, "content": task.content });
+
+    final response = await http.patch(
+      uri,
+      headers: {
+        'Authorization': token,
+        'Accept': 'application/json',
+        'content-type': 'application/json',
+      },
+      body: payload
+    );
+
+    if (response.statusCode != HttpStatus.ok) {
+      throw Exception("Can not edit task");
     }
 
     _tasksOutdated$.add(null);

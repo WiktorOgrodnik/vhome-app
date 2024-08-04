@@ -47,20 +47,20 @@ class _AppViewState extends State<AppView> {
       ),
       onGenerateRoute: (_) => SplashPage.route(),
       builder: (context, child) {
-        return BlocListener<AuthenticationBloc, AuthenticationState>(
+        return BlocListener<AuthenticationBloc, AuthState>(
           listener: (context, state) {
             switch (state.status) {
-              case AuthState.unauthenticated:
+              case AuthStatus.unauthenticated:
                 _navigator.pushAndRemoveUntil<void>(
                   LoginPage.route(),
                   (route) => false,
                 );
-              case AuthState.groupUnselected:
+              case AuthStatus.groupUnselected:
                 _navigator.pushAndRemoveUntil<void>(
                   GroupSelectionPage.route(),
                   (route) => false,
                 );
-              case AuthState.groupSelected:
+              case AuthStatus.groupSelected:
                 _navigator.pushAndRemoveUntil<void>(
                   HomePage.route(),
                   (route) => false,

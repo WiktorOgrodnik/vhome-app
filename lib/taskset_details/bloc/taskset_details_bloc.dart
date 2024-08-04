@@ -12,7 +12,6 @@ class TasksetDetailsBloc extends Bloc<TasksetDetailsEvent, TasksetDetailsState> 
     }) : _repository = repository, super(TasksetDetailsState(taskset: taskset)) {
     on<TasksSubscriptionRequested>(_onTasksSubscriptionRequested);
     on<TaskCompletionToggled>(_onTaskCompletionToggled);
-    on<TaskDeleted>(_onTaskDeleted);
     on<TasksetDeleted>(_onTasksetDeleted);
   }
 
@@ -43,12 +42,6 @@ class TasksetDetailsBloc extends Bloc<TasksetDetailsEvent, TasksetDetailsState> 
     await _repository.toggleTaskCompletion(event.task, event.value); 
   }
 
-  Future<void> _onTaskDeleted(
-    TaskDeleted event,
-    Emitter<TasksetDetailsState> emit,
-  ) async {
-    await _repository.deleteTask(event.task);
-  }
 
   Future<void> _onTasksetDeleted(
     TasksetDeleted event,

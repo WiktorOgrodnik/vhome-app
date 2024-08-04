@@ -11,15 +11,6 @@ final class TasksSubscriptionRequested extends TasksetDetailsEvent {
   const TasksSubscriptionRequested();
 }
 
-final class TaskDeleted extends TasksetDetailsEvent {
-  const TaskDeleted({required this.task});
-
-  final Task task;
-
-  @override
-  List<Object> get props => [task];
-}
-
 final class TasksetDeleted extends TasksetDetailsEvent {
   const TasksetDeleted({required this.taskset});
 

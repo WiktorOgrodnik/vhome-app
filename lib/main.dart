@@ -9,6 +9,7 @@ void main() {
   final groupApi = GroupApi();
   final tasksetApi = TasksetApi();
   final taskApi = TaskApi();
+  final authApi = AuthApi();
   final userApi = UserApi();
 
   VhomeRepository vhomeRepository = VhomeRepository(
@@ -16,6 +17,7 @@ void main() {
     groupApi: groupApi,
     tasksetApi: tasksetApi,
     taskApi: taskApi,
+    authApi: authApi,
     userApi: userApi,
   );
 

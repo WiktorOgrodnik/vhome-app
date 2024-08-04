@@ -24,6 +24,16 @@ final class AddTaskContentChanged extends AddTaskEvent {
   List<Object> get props => [content];
 }
 
+final class TaskDeleted extends AddTaskEvent {
+  const TaskDeleted({required this.task});
+
+  final Task task;
+
+  @override
+  List<Object> get props => [task];
+}
+
+
 final class AddTaskSubmitted extends AddTaskEvent {
   const AddTaskSubmitted();
 }

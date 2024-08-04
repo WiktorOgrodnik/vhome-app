@@ -11,7 +11,8 @@ class Task extends Equatable {
     required this.title,
     required this.content,
     this.completed = false,
-    required this.tasksetId,
+    this.tasksetId = 0,
+    required this.taskAssigned,
   });
 
   factory Task.fromJson(JsonMap json) =>
@@ -23,6 +24,8 @@ class Task extends Equatable {
   final String title;
   final String content;
   final bool completed;
+  @JsonKey(name: 'users_id')
+  final List<int> taskAssigned;
   @JsonKey(name: 'taskset_id')
   final int tasksetId;
 
@@ -32,6 +35,7 @@ class Task extends Equatable {
     String? content,
     bool? completed,
     int? tasksetId,
+    List<int>? taskAssigned,
   }) {
     return Task(
       id: id ?? this.id,
@@ -39,9 +43,10 @@ class Task extends Equatable {
       content: content ?? this.content,
       completed: completed ?? this.completed,
       tasksetId: tasksetId ?? this.tasksetId,
+      taskAssigned: taskAssigned ?? this.taskAssigned,
     );
   }
 
   @override
-  List<Object> get props => [id, title, content, completed, tasksetId]; 
+  List<Object> get props => [id, title, content, completed, taskAssigned, tasksetId]; 
 }

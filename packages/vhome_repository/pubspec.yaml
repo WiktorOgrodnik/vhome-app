@@ -7,11 +7,13 @@ environment:
   sdk: '>=3.4.3 <4.0.0'
   flutter: ">=1.17.0"
 
+publish_to: none
+
 dependencies:
+  equatable: ^2.0.5
   flutter:
     sdk: flutter
   rxdart: ^0.28.0
-  tuple: ^2.0.2
   vhome_web_api:
     path: ../vhome_web_api
 

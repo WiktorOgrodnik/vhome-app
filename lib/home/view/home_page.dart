@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vhome_frontend/devices_page/view/view.dart';
 import 'package:vhome_frontend/home/cubit/home_cubit.dart';
+import 'package:vhome_frontend/home/view/view.dart';
 import 'package:vhome_frontend/settings/views/views.dart';
 import 'package:vhome_frontend/tasksets_page/view/view.dart';
+import 'package:vhome_frontend/users/users.dart';
+import 'package:vhome_repository/vhome_repository.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -14,8 +17,12 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => HomeCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => HomeCubit()),
+        BlocProvider(create: (_) => 
+          UsersBloc(repository: context.read<VhomeRepository>())..add(UsersSubscriptionRequested())),
+      ],
       child: const HomeView(),
     );
   }
@@ -30,13 +37,13 @@ class HomeView extends StatelessWidget {
     final selectedPage = context.select((HomeCubit cubit) => cubit.state.page);
 
     final Widget page;
-    switch (selectedPage.index) {
-      case 0:
+    switch (selectedPage) {
+      case HomeSubPage.tasksets:
         page = TasksetsPage();
-      case 1:
+      case HomeSubPage.devices:
         page = DevicesPage();
-      case 2:
-        page = LogOutPage();
+      case HomeSubPage.settings:
+        page = SettingsPage();
       default:
         throw UnimplementedError('no widget for $selectedPage');
     }
@@ -46,69 +53,31 @@ class HomeView extends StatelessWidget {
         title: Text("Vhome"),
         backgroundColor: theme.colorScheme.surfaceContainer,
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          if (constraints.maxWidth < 500) {
-            return Column(
-              children: [
-                Expanded(child: page),
-                SafeArea(
-                  child: BottomNavigationBar(
-                    items: [
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.home),
-                        label: "Home",
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.devices),
-                        label: "Devices",
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.exit_to_app),
-                        label: "Logout",
-                      ),
-                    ],
-                    currentIndex: selectedPage.index,
-                    onTap: (value) {
-                      context.read<HomeCubit>().setTab(HomeSubPage.values[value]);
-                    },
-                  )
-                )
-              ],
-            );
-          } else {
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SafeArea(
-                  child: NavigationRail(
-                    extended: constraints.maxWidth >= 1150,
-                    backgroundColor: theme.colorScheme.surfaceContainer,
-                    destinations: [
-                      NavigationRailDestination(
-                        icon: Icon(Icons.home),
-                        label: Text("Home"),
-                      ),
-                      NavigationRailDestination(
-                        icon: Icon(Icons.devices),
-                        label: Text("Devices"),
-                      ),
-                      NavigationRailDestination(
-                        icon: Icon(Icons.exit_to_app),
-                        label: Text("Logout"),
-                      ),
-                    ],
-                    selectedIndex: selectedPage.index,
-                    onDestinationSelected: (value) {
-                      context.read<HomeCubit>().setTab(HomeSubPage.values[value]);
-                    }
-                  ),
-                ),
-                Expanded(child: page),
-              ],
-            );
+      body: BlocListener<UsersBloc, UsersState>(
+        listenWhen: (previous, current) => 
+          previous.status != current.status &&
+          current.status == UsersStatus.failure,
+        listener: (context, state) =>
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+                SnackBar(content: Text("Failed to fetch Users."))
+              ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth < 500) {
+              return HomePageMobile(
+                index: selectedPage.index,
+                child: page,
+              );
+            } else {
+              return HomePageDesktop(
+                index: selectedPage.index,
+                child: page,
+              );
+            }
           }
-        }
+        ),
       )
     );
   }

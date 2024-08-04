@@ -5,19 +5,22 @@ class StandardFormField extends StatelessWidget {
   final bool obscureText;
   final ValueChanged<String>? onChanged;
   final String? errorText;
+  final String? initialValue;
 
   const StandardFormField({
     required this.hintText,
     this.obscureText = false,
     this.onChanged,
     this.errorText,
+    this.initialValue = "",
   });
   
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
       obscureText: obscureText,
       onChanged: onChanged,
+      initialValue: initialValue,
       decoration: InputDecoration(
         enabledBorder: const OutlineInputBorder(
           borderSide: BorderSide(color: Colors.white),
@@ -28,7 +31,7 @@ class StandardFormField extends StatelessWidget {
         fillColor: Colors.grey.shade200,
         filled: true,
         labelText: hintText,
-        errorText: errorText, 
+        errorText: errorText,
       ),
     );
   }

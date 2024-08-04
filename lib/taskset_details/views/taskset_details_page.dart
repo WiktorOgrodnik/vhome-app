@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vhome_frontend/taskset_details/taskset_details.dart';
-import 'package:vhome_frontend/taskset_details/widgets/taskset_details_add_task_button.dart';
+import 'package:vhome_frontend/users/bloc/users_bloc.dart';
 import 'package:vhome_repository/vhome_repository.dart';
 
 
@@ -19,12 +19,16 @@ class TasksetDetailsPage extends StatelessWidget {
 
   @override
     Widget build(BuildContext context) {
-      return BlocProvider(
-        create: (context) => TasksetDetailsBloc(
-          repository: context.read<VhomeRepository>() ,
-          taskset: taskset,
-        )..add(TasksSubscriptionRequested()),
-        child: TasksetDetailsListener(taskset: taskset),
+      return MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (context) => 
+            TasksetDetailsBloc(repository: context.read<VhomeRepository>(), taskset: taskset)
+              ..add(TasksSubscriptionRequested())),
+          BlocProvider(create: (context) =>
+            UsersBloc(repository: context.read<VhomeRepository>())
+              ..add(UsersSubscriptionRequested())),
+        ],
+        child: TasksetDetailsListener(taskset: taskset)
       );
     }
 }

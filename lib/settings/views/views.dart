@@ -1,1 +1,1 @@
-export 'logout_page.dart';
+export 'settings_page.dart';
