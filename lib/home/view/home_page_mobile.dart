@@ -19,16 +19,16 @@ class HomePageMobile extends StatelessWidget {
           child: BottomNavigationBar(
             items: [
               BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                label: "Home",
+                icon: Icon(Icons.list),
+                label: "Lists",
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.devices),
                 label: "Devices",
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.exit_to_app),
-                label: "Logout",
+                icon: Icon(Icons.settings),
+                label: "Settings",
               ),
             ],
             currentIndex: index,

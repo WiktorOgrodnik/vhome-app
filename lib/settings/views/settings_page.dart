@@ -1,8 +1,7 @@
 
-import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:vhome_frontend/authentication/bloc/authentication_bloc.dart';
 import 'package:vhome_frontend/settings/bloc/settings_bloc.dart';
 import 'package:vhome_frontend/settings/views/settings_group_inivitation.dart';
@@ -202,72 +201,66 @@ class SettingsListGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      elevation: 4,
-      color: Colors.transparent,
-      borderRadius: BorderRadius.all(Radius.circular(20)),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.all(Radius.circular(20)), 
-        ),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.grey[100],
-            borderRadius: BorderRadius.all(Radius.circular(20)), 
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(25.0),
-            child: Column(
-              children: [
-                SectionTitle(child: Container(alignment: Alignment.topLeft, child: Text(settings.title))),
-                SizedBox(height: 20),
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: 60.0 * settings.items.length, 
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: ListView.separated(
-                      itemCount: settings.items.length,
-                      separatorBuilder: (context, index) => const Divider(),
-                      itemBuilder: (context, index) {
-                        return ElevatedContainer(
-                          color: Colors.grey[100],
-                          child: ListTile(
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
-                            hoverColor: Colors.grey[250],
-                            leading: Icon(settings.items[index].icon),
-                            title: Text(settings.items[index].title),
-                            trailing: Icon(Icons.arrow_right),
-                            onTap: settings.items[index].onTap,
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Material(
+            elevation: 4,
+            color: Colors.transparent,
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.all(Radius.circular(20)), 
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.all(Radius.circular(20)), 
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(25.0),
+                  child: Column(
+                    children: [
+                      SectionTitle(child: Container(alignment: Alignment.topLeft, child: Text(settings.title))),
+                      SizedBox(height: 20),
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: (constraints.maxWidth < 400
+                                      ? 80.0
+                                      : 60.0) * settings.items.length,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: ListView.separated(
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: settings.items.length,
+                            separatorBuilder: (context, index) => const Divider(),
+                            itemBuilder: (context, index) {
+                              return ElevatedContainer(
+                                color: Colors.grey[100],
+                                child: ListTile(
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
+                                  hoverColor: Colors.grey[250],
+                                  leading: Icon(settings.items[index].icon),
+                                  title: Text(settings.items[index].title),
+                                  trailing: Icon(Icons.arrow_right),
+                                  onTap: settings.items[index].onTap,
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
+          );
+        }
       ),
     );
   }
 }
-
-/*ElevatedButton(
-              onPressed: () =>
-                context
-                  .read<VhomeRepository>()
-                  .unselectGroup(),
-              child: Text("Change group"),
-            ),
-            SizedBox(height: 25),
-            ElevatedButton(
-              onPressed: () =>
-                context
-                  .read<AuthenticationBloc>()
-                  .add(AuthenticationLogoutRequested()),
-              child: Text("Logout"),
-            ),*/

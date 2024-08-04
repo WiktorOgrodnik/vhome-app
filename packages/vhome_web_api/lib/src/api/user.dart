@@ -27,7 +27,8 @@ class UserApi {
 
     final bytes = response.statusCode == HttpStatus.ok
         ? response.bodyBytes
-        : await File.fromUri(Uri.parse("assets/profile_picture.png")).readAsBytes();
+        : (await rootBundle.load("assets/profile_picture.png")).buffer.asUint8List();
+        // : await File.fromUri(Uri.parse("assets/profile_picture.png")).readAsBytes();
     
     return bytes;
   }
@@ -51,6 +52,8 @@ class UserApi {
     if (response.statusCode != HttpStatus.ok) {
       throw Exception('Can not get the Users');
     }
+
+    print(response.statusCode);
 
     final List<dynamic> responseData = jsonDecode(response.body);
     

@@ -29,8 +29,8 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
         status: () => UsersStatus.success,
         users: () => users,
       ),
-      onError: (_, __) => state.copyWith(
-        status: () => UsersStatus.failure,
+      onError: (e, __) => state.copyWith(
+        status: () {print(e); return UsersStatus.failure;},
       ),
     );
   }
