@@ -53,8 +53,6 @@ class UserApi {
       throw Exception('Can not get the Users');
     }
 
-    print(response.statusCode);
-
     final List<dynamic> responseData = jsonDecode(response.body);
     
     return Future.wait(responseData.map((userMap) async 
@@ -73,8 +71,6 @@ class UserApi {
         "content-type": "application/json"
       },
     );
-
-    print(response.statusCode);
 
     if (response.statusCode != HttpStatus.created) {
       throw Exception("Could not register user!");

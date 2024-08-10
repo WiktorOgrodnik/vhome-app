@@ -30,7 +30,7 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
         users: () => users,
       ),
       onError: (e, __) => state.copyWith(
-        status: () {print(e); return UsersStatus.failure;},
+        status: () => UsersStatus.failure,
       ),
     );
   }
@@ -39,12 +39,7 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
     UserTaskAssigned event,
     Emitter<UsersState> emit,
   ) async {
-    try {
-      await _repository.changeAssign(event.task, event.user, event.value);
-    } catch (error) {
-      print(error);
-    }
-
+    await _repository.changeAssign(event.task, event.user, event.value);
     _repository.refreshUsers();
   }
 

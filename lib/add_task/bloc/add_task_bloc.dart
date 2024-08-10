@@ -67,8 +67,6 @@ class AddTaskBloc extends Bloc<AddTaskEvent, AddTaskState> {
     AddTaskSubmitted event,
     Emitter<AddTaskState> emit,
   ) async {
-    print(state.edit);
-
     final task = state.edit
       ? Task(
           id: state.id,
@@ -82,8 +80,6 @@ class AddTaskBloc extends Bloc<AddTaskEvent, AddTaskState> {
           tasksetId: state.id,
           taskAssigned: [],
         );
-
-    print(task.id);
 
     try {
       
