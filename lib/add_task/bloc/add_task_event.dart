@@ -33,6 +33,16 @@ final class TaskDeleted extends AddTaskEvent {
   List<Object> get props => [task];
 }
 
+final class AddTaskAssignUser extends AddTaskEvent {
+  const AddTaskAssignUser({required this.user, required this.add});
+
+  final int user;
+  final bool add;
+
+  @override
+  List<Object> get props => [user];
+}
+
 
 final class AddTaskSubmitted extends AddTaskEvent {
   const AddTaskSubmitted();

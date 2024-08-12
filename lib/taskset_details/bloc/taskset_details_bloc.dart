@@ -25,10 +25,12 @@ class TasksetDetailsBloc extends Bloc<TasksetDetailsEvent, TasksetDetailsState> 
 
     await emit.forEach(
       _repository.getTasks(state.taskset.id),
-      onData: (tasks) => state.copyWith(
-        status: () => TasksetDetailsStatus.success,
-        tasks: () => tasks,
-      ),
+      onData: (tasks) {
+        return state.copyWith(
+          status: () => TasksetDetailsStatus.success,
+          tasks: () => tasks,
+        );
+      },
       onError: (_, __) => state.copyWith(
         status: () => TasksetDetailsStatus.failure,
       ),

@@ -22,7 +22,6 @@ class QrcodeBloc extends Bloc<QrcodeEvent, QrcodeState> {
     await emit.forEach<UserLogin?>(
       _repository.pairingStream,
       onData: (data) {
-        print(data);
         if (data != null) {
           _repository.loginDisplay(data);
           return state.copyWith(status: QrcodeStatus.loaded);

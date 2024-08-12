@@ -29,7 +29,7 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
         status: () => UsersStatus.success,
         users: () => users,
       ),
-      onError: (e, __) => state.copyWith(
+      onError: (_, __) => state.copyWith(
         status: () => UsersStatus.failure,
       ),
     );
@@ -40,7 +40,7 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
     Emitter<UsersState> emit,
   ) async {
     await _repository.changeAssign(event.task, event.user, event.value);
-    _repository.refreshUsers();
+    emit(state);
   }
 
   Future<void> _onUsersUploadProfilePictureRequested( 

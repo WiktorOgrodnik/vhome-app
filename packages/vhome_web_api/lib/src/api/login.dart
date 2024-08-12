@@ -113,8 +113,6 @@ class AuthApi {
   Future<void> addDisplay(String token, String pairingCode) async {
     final uri = Uri.parse("$apiUrl/display");
     final response = await post(uri, headers: { 'Authorization': token }, body: pairingCode);
-    
-    print(response.statusCode);
 
     if (response.statusCode != HttpStatus.ok) {
       throw Exception("Can not add display");

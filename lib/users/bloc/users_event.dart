@@ -18,7 +18,7 @@ final class UserTaskAssigned extends UsersEvent {
     required this.value
   });
 
-  final Task task;
+  final int task;
   final User user;
   final bool value;
 

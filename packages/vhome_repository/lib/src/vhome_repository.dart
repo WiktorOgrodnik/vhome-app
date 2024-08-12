@@ -171,7 +171,7 @@ class VhomeRepository {
     => _taskApi.getTasks(_authStateController.token, tasksetId);
   Future<void> toggleTaskCompletion(Task task, bool value)
     => _taskApi.changeCompleted(_authStateController.token, task, value);
-  Future<void> changeAssign(Task task, User user, bool value)
+  Future<void> changeAssign(int task, User user, bool value)
     => _taskApi.changeAssign(_authStateController.token, task, user, value);
   Future<void> addTask(Task task)
     => _taskApi.add(_authStateController.token, task.tasksetId, task.title, task.content);
@@ -232,8 +232,8 @@ class VhomeRepository {
     => _taskApi.refreshTasks();
 
   void refreshTasksets() {
-    _taskApi.refreshTasks();
     _tasksetApi.refreshTasksets();
+    _taskApi.refreshTasks();
   }
 
   void refreshUsers()

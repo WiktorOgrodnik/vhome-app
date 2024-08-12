@@ -1,28 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vhome_frontend/add_task/bloc/add_task_bloc.dart';
 import 'package:vhome_frontend/users/bloc/users_bloc.dart';
 import 'package:vhome_frontend/users/users.dart';
 import 'package:vhome_frontend/widgets/widgets.dart';
-import 'package:vhome_web_api/vhome_web_api.dart';
 
-class UsersList extends StatefulWidget {
-  const UsersList({super.key, this.task});
+class UsersList extends StatelessWidget {
+  const UsersList({super.key, this.editing = false});
 
-  final Task? task;
-
-  @override
-  State<UsersList> createState() => _UsersListState();
-}
-
-class _UsersListState extends State<UsersList> {
-  bool get editing => widget.task != null;
-
+  final bool editing;
+  
   @override
   Widget build(BuildContext context) {
 
-    List<int> taskAssigned = editing 
-      ? widget.task!.taskAssigned
-      : [];
+    final addTaskState = editing
+        ? context.select((AddTaskBloc bloc) => bloc.state)
+        : null;
+
+    final taskAssigned = addTaskState != null ? addTaskState.taskAssigned : [];
+    final taskId = addTaskState != null ? addTaskState.id : 0;
 
     return BlocBuilder<UsersBloc, UsersState>(
       builder: (context, state) {
@@ -49,19 +45,15 @@ class _UsersListState extends State<UsersList> {
                         ? Checkbox(
                             value: taskAssigned.contains(state.users[index].id),
                             onChanged: (value) {
-                              context.read<UsersBloc>().add(UserTaskAssigned(
-                                task: widget.task!,
-                                user: state.users[index],
-                                value: value!,
-                              ));
+                              context
+                                .read<AddTaskBloc>()
+                                .add(AddTaskAssignUser(user: state.users[index].id, add: value!));
 
-                              setState(() {
-                                if (value) {
-                                  taskAssigned.add(state.users[index].id);              
-                                } else {
-                                  taskAssigned.remove(state.users[index].id);
-                                }
-                              });
+                              context.read<UsersBloc>().add(UserTaskAssigned(
+                                task: taskId,
+                                user: state.users[index],
+                                value: value,
+                              ));
                             }
                           )
                         : null,

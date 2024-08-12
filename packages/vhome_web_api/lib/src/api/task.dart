@@ -50,10 +50,10 @@ class TaskApi {
     _tasksOutdated$.add(null);
   }
 
-  Future<void> changeAssign(String token, Task task, User user, bool value) async {
+  Future<void> changeAssign(String token, int task, User user, bool value) async {
     final uri = value ? 
-      Uri.parse("$apiUrl/task/${task.id}/assign/${user.id}") :
-      Uri.parse("$apiUrl/task/${task.id}/unassign/${user.id}");
+      Uri.parse("$apiUrl/task/$task/assign/${user.id}") :
+      Uri.parse("$apiUrl/task/$task/unassign/${user.id}");
 
     final response = await http.put(uri, headers: { 'Authorization': token });
 

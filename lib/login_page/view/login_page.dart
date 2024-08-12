@@ -19,44 +19,43 @@ class LoginPage extends StatelessWidget {
         title: Text("Login to Vhome account"),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Container(
-            alignment: Alignment.topCenter,
-            child: SizedBox(
-              width: 1000,
-              child: Center(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 50),
-                    const Icon(
-                      Icons.lock,
-                      size: 100,
+        child: Container(
+          alignment: Alignment.topCenter,
+          child: SizedBox(
+            width: 1000,
+            child: Center(
+              child: Column(
+                children: [
+                  const SizedBox(height: 50),
+                  const Icon(
+                    Icons.lock,
+                    size: 100,
+                  ),
+                  const SizedBox(height: 50),
+                  Text(
+                    "Welcome back!",
+                    style: TextStyle(
+                      color: Colors.grey[700],
+                      fontSize: 16,
                     ),
-                    const SizedBox(height: 50),
-                    Text(
-                      "Welcome back!",
-                      style: TextStyle(
-                        color: Colors.grey[700],
-                        fontSize: 16,
-                      ),
+                  ),
+                  BlocProvider(
+                    create: (context) => 
+                      LoginBloc(repository: context.read<VhomeRepository>()),
+                    child: const LoginForm(),
+                  ),
+                  Spacer(flex: 2),
+                  Padding(
+                    padding: const EdgeInsets.all(25.0),
+                    child: ElevatedButton(
+                      onPressed: () =>
+                        Navigator.of(context).push(
+                          RegisterPage.route(),
+                        ),
+                      child: Text("Create new account"),
                     ),
-                    BlocProvider(
-                      create: (context) => 
-                        LoginBloc(repository: context.read<VhomeRepository>()),
-                      child: const LoginForm(),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(25.0),
-                      child: ElevatedButton(
-                        onPressed: () =>
-                          Navigator.of(context).push(
-                            RegisterPage.route(),
-                          ),
-                        child: Text("Create new account"),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),

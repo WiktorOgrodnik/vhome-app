@@ -41,7 +41,6 @@ class SettingsPairDisplayPage extends StatelessWidget {
                         fit: BoxFit.fitWidth,
                         controller: controller,
                         onDetect: (capture) {
-                          print("HELLO!");
                           final List<Barcode> barcodes = capture.barcodes;
                           
                           if (barcodes.length > 1) {

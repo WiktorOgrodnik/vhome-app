@@ -13,8 +13,10 @@ class UserAssignMultiIcon extends StatefulWidget {
 }
 
 class _UserAssignMultiIconState extends State<UserAssignMultiIcon> {
+  _UserAssignMultiIconState();
+
   bool _isHovered = false;
-  
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -41,7 +43,6 @@ class _UserAssignMultiIconState extends State<UserAssignMultiIcon> {
                         return const Icon(Icons.error);
                       default:
                         return const CircularProgressIndicator();
-                        
                     }
                   }
                 ),

@@ -9,6 +9,7 @@ final class AddTaskState extends Equatable {
     this.id = 0,
     this.title = const TaskTitle.pure(),
     this.content = const Content.pure(),
+    required this.taskAssigned,
     this.isValid = false,
     this.edit = false,
   });
@@ -18,6 +19,7 @@ final class AddTaskState extends Equatable {
   final int id;
   final TaskTitle title;
   final Content content;
+  final List<int> taskAssigned;
   final bool isValid;
   final bool edit;
 
@@ -27,6 +29,7 @@ final class AddTaskState extends Equatable {
     int? id,
     TaskTitle? title,
     Content? content,
+    List<int>? taskAssigned,
     bool? isValid,
     bool? edit,
   }) {
@@ -36,11 +39,12 @@ final class AddTaskState extends Equatable {
       id: id ?? this.id,
       title: title ?? this.title,
       content: content ?? this.content,
+      taskAssigned: taskAssigned ?? this.taskAssigned,
       isValid: isValid ?? this.isValid,
       edit: edit ?? this.edit,
     );
   }
 
   @override
-  List<Object?> get props => [status, formStatus, id, title, content, isValid, edit];
+  List<Object> get props => [status, formStatus, id, title, content, taskAssigned, isValid, edit];
 }

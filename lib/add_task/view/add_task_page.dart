@@ -111,7 +111,7 @@ class AddTaskView extends StatelessWidget {
                     if (editable) 
                     SizedBox(height: 25),
                     if (editable) 
-                    _AssignMultiSelect(task: task!),
+                    _AssignMultiSelect(),
                     SizedBox(height: 25),
                     if (!display)
                     _AcceptButton(editable),
@@ -169,24 +169,22 @@ class _ContentField extends StatelessWidget {
 }
 
 class _AssignMultiSelect extends StatelessWidget {
-  const _AssignMultiSelect({required this.task});
-  
-  final Task task;
+  const _AssignMultiSelect();
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AddTaskBloc, AddTaskState>(
-      buildWhen: (previous, current) => previous.content != current.content,
-      builder: (context, state) {
-        return BlocProvider(
-          create: (_) => UsersBloc(repository: context.read<VhomeRepository>())
-            ..add(UsersSubscriptionRequested()),
-          child: SizedBox(
+    return BlocProvider(
+      create: (_) => UsersBloc(repository: context.read<VhomeRepository>())
+        ..add(UsersSubscriptionRequested()),
+      child: BlocBuilder<UsersBloc, UsersState>(
+        buildWhen: (previous, current) => previous.status != current.status,
+        builder: (context, state) {
+          return SizedBox(
             height: 400,
-            child: UsersList(task: task),
-          ),
-        );
-      }
+            child: UsersList(editing: true),
+          );
+        }
+      ),
     );
   }
 }

@@ -17,12 +17,14 @@ class AddTaskBloc extends Bloc<AddTaskEvent, AddTaskState> {
               id: task != null ? task.id : taskset!.id,
               title: task != null ? TaskTitle.dirty(task.title) : TaskTitle.pure(),
               content: task != null ? Content.dirty(task.content) : Content.pure(),
+              taskAssigned: task != null ? task.taskAssigned : [],
               edit: task != null,
             )
       ) {
     on<AddTaskSubmitted>(_onSubmitted);
     on<AddTaskTitleChanged>(_onTitleChanged);
     on<AddTaskContentChanged>(_onContentChanged);
+    on<AddTaskAssignUser>(_onAddTaskAssignUser);
     on<TaskDeleted>(_onTaskDeleted);
   }
 
@@ -54,6 +56,19 @@ class AddTaskBloc extends Bloc<AddTaskEvent, AddTaskState> {
     );
   }
 
+  void _onAddTaskAssignUser(
+    AddTaskAssignUser event,
+    Emitter<AddTaskState> emit,
+  ) {
+    final List<int> taskAssigned = List.from(state.taskAssigned);
+    if (event.add) {
+      taskAssigned.add(event.user);
+    } else {
+      taskAssigned.remove(event.user);
+    }
+    emit(state.copyWith(taskAssigned: taskAssigned));
+  }
+
   Future<void> _onTaskDeleted(
     TaskDeleted event,
     Emitter<AddTaskState> emit,
@@ -61,7 +76,6 @@ class AddTaskBloc extends Bloc<AddTaskEvent, AddTaskState> {
     await _repository.deleteTask(event.task);
     emit(state.copyWith(status: AddDeviceStatus.deleted));
   }
-
 
   Future<void> _onSubmitted(
     AddTaskSubmitted event,
@@ -82,7 +96,6 @@ class AddTaskBloc extends Bloc<AddTaskEvent, AddTaskState> {
         );
 
     try {
-      
       if (state.edit) {
         await _repository.editTask(task);
       } else {

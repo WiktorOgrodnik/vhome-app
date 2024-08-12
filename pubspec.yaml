@@ -25,7 +25,6 @@ dependencies:
   formz: ^0.7.0
   file_selector_linux: ^0.9.2+1
   file_selector: ^1.0.3
-  universal_ble: ^0.11.1
   qr_flutter: ^4.1.0
   mobile_scanner: ^4.0.1
 

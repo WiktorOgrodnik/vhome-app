@@ -23,8 +23,6 @@ class SettingsGroup {
   final List<SettingsItem> items;
 }
 
-
-
 class SettingsListGroup extends StatelessWidget {
   const SettingsListGroup({
     super.key,
