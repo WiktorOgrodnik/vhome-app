@@ -10,3 +10,7 @@ sealed class TasksetsEvent extends Equatable {
 final class TasksetsSubscriptionRequested extends TasksetsEvent {
   const TasksetsSubscriptionRequested();
 }
+
+final class TasksetsRefreshed extends TasksetsEvent {
+  const TasksetsRefreshed();
+}

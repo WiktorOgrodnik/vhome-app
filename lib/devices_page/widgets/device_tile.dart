@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:vhome_frontend/devices_page/widgets/thermometer_content.dart';
-import 'package:vhome_web_api/vhome_web_api.dart';
+import 'package:vhome_repository/vhome_repository.dart';
 
 class DeviceTile extends StatelessWidget {
   const DeviceTile({required this.device, super.key});
@@ -14,6 +15,11 @@ class DeviceTile extends StatelessWidget {
     final style = theme.textTheme.titleLarge!.copyWith(
       color: theme.colorScheme.onPrimaryContainer,
     );
+
+    final display = context.read<VhomeRepository>().display;
+
+    final width = display ? 360.0 : 400.0;
+    final height = display ? 360.0 : 400.0;
     
     return Stack(
       children: [
@@ -31,8 +37,8 @@ class DeviceTile extends StatelessWidget {
                 color: theme.colorScheme.primaryContainer,
                 borderRadius: BorderRadius.all(Radius.circular(20)),
               ),
-              width: 400,
-              height: 400,
+              width: width,
+              height: height,
               child: AnimatedSize(
                 duration: Duration(milliseconds: 200),
                 child: Padding(

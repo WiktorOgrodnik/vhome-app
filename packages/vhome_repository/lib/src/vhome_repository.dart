@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:vhome_repository/src/auth_state.dart';
 import 'package:vhome_web_api/vhome_web_api.dart';
 
@@ -45,6 +43,7 @@ class VhomeRepository {
     required TaskApi taskApi,
     required AuthApi authApi,
     required UserApi userApi,
+    this.display = false,
   }) : _deviceApi = deviceApi,
        _groupApi = groupApi,
        _tasksetApi = tasksetApi,
@@ -58,6 +57,7 @@ class VhomeRepository {
   final TaskApi _taskApi;
   final AuthApi _authApi;
   final UserApi _userApi;
+  final bool display;
 
   final _authStateController = AuthStateController();
 
@@ -200,8 +200,6 @@ class VhomeRepository {
     => _userApi.getUsers(_authStateController.token);
   Future<void> uploadProfilePicture(Uint8List data)
     => _userApi.uploadUserPicture(_authStateController.token, data);
-  void refreshUsers()
-    => _userApi.refreshUsers();
 
   // Pairing
 
@@ -224,8 +222,23 @@ class VhomeRepository {
 
   Future<void> addDisplay(String pairingCode)
     => _authApi.addDisplay(_authStateController.token, pairingCode);
+  
+  // refresh
+
+  void refreshDevices()
+    => _deviceApi.refreshDevices();
+
+  void refreshTasks()
+    => _taskApi.refreshTasks();
+
+  void refreshTasksets() {
+    _taskApi.refreshTasks();
+    _tasksetApi.refreshTasksets();
+  }
+
+  void refreshUsers()
+    => _userApi.refreshUsers();
 
   // dispose
-
   void dispose() => _authStateController.close();
 }

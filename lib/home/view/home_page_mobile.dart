@@ -1,13 +1,17 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vhome_frontend/home/cubit/home_cubit.dart';
 
 class HomePageMobile extends StatelessWidget {
-  HomePageMobile({required this.child, required this.index});
+  const HomePageMobile({
+    required this.child,
+    required this.index,
+    this.display = false
+  });
  
   final int index;
   final Widget child;
+  final bool display;
     
   @override
   Widget build(BuildContext context) {

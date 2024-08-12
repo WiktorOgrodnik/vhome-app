@@ -23,16 +23,28 @@ class TasksetsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final display = context.read<VhomeRepository>().display;
+
+    final button = display
+        ? FloatingActionButton(
+            child: Icon(Icons.refresh),
+            onPressed: () =>
+              context
+                .read<DevicesBloc>()
+                .add(const DevicesRefresh()),
+          )
+        : FloatingActionButton(
+            child: Icon(Icons.add),
+            onPressed: () async {
+              await Navigator.of(context).push(
+                AddDevicePage.route(),
+              );
+            },
+          );
+
     return Scaffold(
       body: DevicesList(),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () async {
-          await Navigator.of(context).push(
-            AddDevicePage.route(),
-          );
-        },
-      ),
+      floatingActionButton: button, 
     );
   }
 }

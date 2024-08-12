@@ -57,10 +57,13 @@ class TasksetDetailsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final display = context.read<VhomeRepository>().display;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(taskset.title),
         actions: [
+          if (!display)
           IconButton(
             onPressed: () {
               context
@@ -83,6 +86,7 @@ class TasksetDetailsView extends StatelessWidget {
                   flex: 8,
                   child: TasksetDetailsList(),
                 ),
+                if (!display)
                 Expanded(
                   flex: 1,
                   child: TasksetDetailsAddTaskButton(taskset: taskset), 

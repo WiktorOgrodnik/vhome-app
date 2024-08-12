@@ -10,3 +10,7 @@ sealed class DevicesEvent extends Equatable {
 final class DevicesSubscriptionRequested extends DevicesEvent {
   const DevicesSubscriptionRequested();
 }
+
+final class DevicesRefresh extends DevicesEvent {
+  const DevicesRefresh();
+}

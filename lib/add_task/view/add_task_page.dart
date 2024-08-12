@@ -74,13 +74,15 @@ class AddTaskView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final display = context.read<VhomeRepository>().display;
+
     return Scaffold(
       appBar: AppBar(
         title: editable
           ? Text("Editing task ${task!.title}")
           : Text("Add task to ${taskset!.title}"),
         actions: [
-          if (editable)
+          if (editable && !display)
             IconButton(
               onPressed: () {
                 context
@@ -111,6 +113,7 @@ class AddTaskView extends StatelessWidget {
                     if (editable) 
                     _AssignMultiSelect(task: task!),
                     SizedBox(height: 25),
+                    if (!display)
                     _AcceptButton(editable),
                   ],
                 ),

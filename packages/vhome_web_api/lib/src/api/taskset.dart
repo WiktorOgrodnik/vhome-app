@@ -61,4 +61,7 @@ class TasksetApi {
     _tasksetOutdated.add(null);
   }
 
+  void refreshTasksets() {
+    _tasksetOutdated.add(null);
+  }
 }

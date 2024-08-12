@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vhome_frontend/taskset_details/taskset_details.dart';
 import 'package:vhome_frontend/tasksets_page/tasksets_page.dart';
 import 'package:vhome_repository/vhome_repository.dart';
@@ -19,6 +20,11 @@ class TasksetTile extends StatelessWidget {
       color: theme.colorScheme.onPrimaryContainer,
     );
 
+    final display = context.read<VhomeRepository>().display;
+
+    final width = display ? 360.0 : 400.0;
+    final height = display ? 460.0 : 600.0;
+
     return Material(
       elevation: 4,
       color: Colors.transparent,
@@ -33,8 +39,8 @@ class TasksetTile extends StatelessWidget {
             color: theme.colorScheme.primaryContainer,
             borderRadius: BorderRadius.all(Radius.circular(20)),
           ),
-          width: 400,
-          height: 600,
+          width: width,
+          height: height,
           child: AnimatedSize(
             duration: Duration(milliseconds: 200),
             child: Padding(

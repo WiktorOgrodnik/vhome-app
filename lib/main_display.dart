@@ -19,6 +19,7 @@ void main() {
     taskApi: taskApi,
     authApi: authApi,
     userApi: userApi,
+    display: true,
   );
 
   runApp(AppDisplay(repository: vhomeRepository));

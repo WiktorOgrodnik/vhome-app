@@ -69,4 +69,8 @@ class DeviceApi {
     final data = DeviceToken.fromJson(jsonDecode(response.body));
     return data; 
   }
+
+  void refreshDevices() {
+    _devicesOutdated.add(null);
+  }
 }

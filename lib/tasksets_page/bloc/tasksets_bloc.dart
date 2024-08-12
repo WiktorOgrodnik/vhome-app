@@ -10,6 +10,7 @@ class TasksetsBloc extends Bloc<TasksetsEvent, TasksetsState> {
     required VhomeRepository repository
   }) : _repository = repository, super(const TasksetsState()) {
     on<TasksetsSubscriptionRequested>(_onTasksetsSubscriptionRequested);
+    on<TasksetsRefreshed>(_onTasksetsRefreshed);
   }
   
   final VhomeRepository _repository;
@@ -30,5 +31,12 @@ class TasksetsBloc extends Bloc<TasksetsEvent, TasksetsState> {
         status: () => TasksetsStatus.failure,
       ),
     );
+  }
+
+  void _onTasksetsRefreshed(
+    TasksetsRefreshed event,
+    Emitter<TasksetsState> emit,
+  ) {
+    _repository.refreshTasksets();
   }
 }

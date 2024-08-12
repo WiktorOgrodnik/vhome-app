@@ -117,4 +117,8 @@ class TaskApi {
 
     _tasksOutdated$.add(null);
   }
+
+  void refreshTasks() {
+    _tasksOutdated$.add(null);
+  }
 }

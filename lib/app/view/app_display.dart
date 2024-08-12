@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vhome_frontend/authentication/bloc/authentication_bloc.dart';
-import 'package:vhome_frontend/home/view/home_page.dart';
+import 'package:vhome_frontend/home/view/home_page_display.dart';
 import 'package:vhome_frontend/qrcode_page/view/view.dart';
 import 'package:vhome_frontend/splash/splash.dart';
 import 'package:vhome_repository/vhome_repository.dart';
@@ -56,7 +56,7 @@ class _AppDisplayViewState extends State<AppDisplayView> {
                 );
               case AuthStatus.groupSelected:
                 _navigator.pushAndRemoveUntil<void>(
-                  HomePage.route(),
+                  HomeDisplayPage.route(),
                   (route) => false,
                 );
               default:
