@@ -1,6 +1,6 @@
 part of 'settings_bloc.dart';
 
-enum SettingsStatus { overview, invitation, error }
+enum SettingsStatus { overview, invitation, pairingCode, pairingQrcode, error }
 
 final class SettingsState extends Equatable {
   const SettingsState({

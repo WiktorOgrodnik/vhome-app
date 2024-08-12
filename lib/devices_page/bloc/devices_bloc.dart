@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:bloc/bloc.dart';
 import 'package:vhome_repository/vhome_repository.dart';
-import 'package:vhome_web_api/vhome_web_api.dart';
 
 part 'devices_event.dart';
 part 'devices_state.dart';

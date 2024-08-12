@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart';
 import 'package:vhome_web_api/vhome_web_api.dart';
@@ -87,5 +88,36 @@ class AuthApi {
     return response.statusCode == 200
       ? UserLogin.fromJson(jsonDecode(response.body))
       : null;
+  }
+
+  Future<String> getPairingCode() async {
+    final uri = Uri.parse("$apiUrl/display/pairing_code");
+    final response = await get(uri);
+
+    if (response.statusCode != HttpStatus.ok) {
+      throw Exception("Can not get pairing code");
+    }
+    
+    return response.body;
+  }
+
+  Future<UserLogin?> getDisplayToken(String pairingCode) async {
+    final uri = Uri.parse("$apiUrl/display/pairing_code");
+    final response = await post(uri, body: pairingCode);
+
+    return response.statusCode == HttpStatus.ok
+      ? UserLogin.fromJson(jsonDecode(response.body))
+      : null;
+  }
+
+  Future<void> addDisplay(String token, String pairingCode) async {
+    final uri = Uri.parse("$apiUrl/display");
+    final response = await post(uri, headers: { 'Authorization': token }, body: pairingCode);
+    
+    print(response.statusCode);
+
+    if (response.statusCode != HttpStatus.ok) {
+      throw Exception("Can not add display");
+    }
   }
 }

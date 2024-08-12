@@ -1,10 +1,10 @@
+import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vhome_frontend/authentication/bloc/authentication_bloc.dart';
 import 'package:vhome_frontend/settings/bloc/settings_bloc.dart';
-import 'package:vhome_frontend/settings/views/settings_group_inivitation.dart';
+import 'package:vhome_frontend/settings/setting.dart';
 import 'package:vhome_frontend/users/bloc/users_bloc.dart';
 import 'package:vhome_frontend/users/view/view.dart';
 import 'package:vhome_frontend/widgets/widgets.dart';
@@ -75,6 +75,10 @@ class SettingsListener extends StatelessWidget {
           switch (state.status) {
             case SettingsStatus.invitation:
               return const SettingsGroupInivitationPage();
+            case SettingsStatus.pairingCode:
+              return SettingsPairDisplayCodePage();
+            case SettingsStatus.pairingQrcode:
+              return SettingsPairDisplayPage();
             default:
               return const SettingsView();
           }
@@ -120,7 +124,29 @@ class SettingsView extends StatelessWidget {
                 .read<AuthenticationBloc>()
                 .add(AuthenticationGroupLeaveRequested()),
           ),
-        ]
+        ],
+      ),
+      SettingsGroup(
+        title: "Display",
+        items: [
+          if (Platform.isAndroid)
+          SettingsItem(
+            title: "Pair display with the QR code",
+            icon: Icons.qr_code,
+            onTap: () =>
+             context
+              .read<SettingsBloc>()
+              .add(const SettingsPairDisplayQrcodeRequested())
+          ),
+          SettingsItem(
+            title: "Pair display with the code",
+            icon: Icons.display_settings,
+            onTap: () =>
+             context
+              .read<SettingsBloc>()
+              .add(const SettingsPairDisplayCodeRequested())
+          ),
+        ], 
       ),
       SettingsGroup(
         title: "App",
@@ -182,6 +208,8 @@ class SettingsView extends StatelessWidget {
                 SettingsListGroup(settings: settings[0]),
                 SizedBox(height: 25),
                 SettingsListGroup(settings: settings[1]),
+                SizedBox(height: 25),
+                SettingsListGroup(settings: settings[2]),
               ],
             ),
           ),

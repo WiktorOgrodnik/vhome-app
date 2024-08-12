@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:vhome_repository/src/auth_state.dart';
 import 'package:vhome_web_api/vhome_web_api.dart';
 
@@ -77,6 +79,10 @@ class VhomeRepository {
     );
 
     return data != null;
+  }
+
+  Future<void> loginDisplay(UserLogin data) async {
+    _authStateController.update(AuthState.groupSelected(data));
   }
 
   Future<void> registerUser(String username, String password, Uint8List? picture) async {
@@ -196,7 +202,28 @@ class VhomeRepository {
     => _userApi.uploadUserPicture(_authStateController.token, data);
   void refreshUsers()
     => _userApi.refreshUsers();
+
+  // Pairing
+
+  String? _pairingCode;
+
+  Stream<UserLogin?> get pairingStream
+    => Stream.periodic(
+      const Duration(seconds: 5),
+      (_) => _pairingCode != null ? getDisplayToken(_pairingCode!) : null
+    ).asyncMap((r) async => await r);
+
+  Future<String> getPairingCode() async {
+    final pairingCode = await _authApi.getPairingCode();
+    _pairingCode = pairingCode;
+    return pairingCode;
+  }
   
+  Future<UserLogin?> getDisplayToken(String pairingCode)
+    => _authApi.getDisplayToken(pairingCode);
+
+  Future<void> addDisplay(String pairingCode)
+    => _authApi.addDisplay(_authStateController.token, pairingCode);
 
   // dispose
 
