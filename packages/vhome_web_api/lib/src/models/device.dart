@@ -22,6 +22,7 @@ sealed class Device extends Equatable {
     this.id = 0,
     required this.name,
     required this.deviceType,
+    required this.lastUpdated,
   });
   
   factory Device.fromJson(JsonMap json) {
@@ -39,17 +40,20 @@ sealed class Device extends Equatable {
   final String name;
   @JsonKey(name: 'dev_t')
   final DeviceType deviceType;
+  @JsonKey(name: 'last_updated')
+  final DateTime lastUpdated;
 
   Device copyWith({
     int? id,
     String? name,
-    DeviceType? deviceType
+    DeviceType? deviceType,
+    DateTime? lastUpdated,
   });
 
   Map<String, String> get infoFields;
 
   @override
-  List<Object?> get props => [id, name, deviceType];
+  List<Object?> get props => [id, name, deviceType, lastUpdated];
 }
 
 @JsonSerializable()
@@ -83,9 +87,9 @@ final class Thermometer extends Device {
   const Thermometer({
     required super.id,
     required super.name,
+    required super.lastUpdated,
     super.deviceType = DeviceType.thermometer,
     required this.lastTemperature,
-    required this.lastUpdated,
     required this.lastHumidity,
   });
 
@@ -99,10 +103,7 @@ final class Thermometer extends Device {
   final double? lastTemperature;
   @JsonKey(name: 'last_humidity')
   final double? lastHumidity;
-  @JsonKey(name: 'last_updated')
-  final DateTime lastUpdated;
-
-  @override
+    @override
   Device copyWith({
     int? id,
     String? name,
@@ -125,7 +126,7 @@ final class Thermometer extends Device {
   Map<String, String> get infoFields => {
     "Last temperature": lastTemperature != null ? lastTemperature.toString() : "null",
     "Last humidity": lastHumidity != null ? lastHumidity.toString() : "null",
-    "Last updated": lastUpdated.toString()
+    "Last updated": super.lastUpdated.toString()
   };
 
   ThermometerFields get fields {
@@ -146,8 +147,8 @@ final class Thermometer extends Device {
     super.id,
     super.name,
     super.deviceType,
+    super.lastUpdated,
     lastTemperature,
     lastHumidity,
-    lastUpdated,
   ]; 
 }

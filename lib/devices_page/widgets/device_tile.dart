@@ -57,10 +57,10 @@ class DeviceTile extends StatelessWidget {
                       ),
                       const Spacer(flex: 2),
                       if (device.deviceType == DeviceType.thermometer)
-                        DefaultTextStyle(
-                          style: DefaultTextStyle.of(context).style.copyWith(fontStyle: FontStyle.italic),
-                          child: Center(child: Text("Last updated: ${DateFormat('yyyy-MM-dd – kk:mm').format((device as Thermometer).lastUpdated.toLocal()) }")),
-                        ),
+                      DefaultTextStyle(
+                        style: DefaultTextStyle.of(context).style.copyWith(fontStyle: FontStyle.italic),
+                        child: Center(child: Text("Last updated: ${DateFormat('yyyy-MM-dd – kk:mm').format(device.lastUpdated.toLocal()) }")),
+                      ),
                       Padding(
                         padding: const EdgeInsets.all(8),
                         child: ElevatedButton(
@@ -78,7 +78,7 @@ class DeviceTile extends StatelessWidget {
           ),
         ),
         if (device.deviceType == DeviceType.thermometer 
-          && DateTime.now().toLocal().difference((device as Thermometer).lastUpdated.toLocal()).inMinutes > 60)
+          && DateTime.now().toLocal().difference(device.lastUpdated.toLocal()).inMinutes > 60)
           Positioned(
             top: 5,
             right: 10,
