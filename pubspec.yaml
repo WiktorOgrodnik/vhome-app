@@ -27,6 +27,7 @@ dependencies:
   file_selector: ^1.0.3
   qr_flutter: ^4.1.0
   mobile_scanner: ^4.0.1
+  flutter_secure_storage: ^4.2.1
 
 dev_dependencies:
   flutter_test:

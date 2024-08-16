@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:vhome_repository/src/auth_state.dart';
 import 'package:vhome_web_api/vhome_web_api.dart';
 
@@ -8,12 +10,27 @@ export 'auth_state.dart';
 
 class AuthStateController {
   final StreamController<AuthState> _stream = StreamController<AuthState>();
+  final _secureStorate = const FlutterSecureStorage();
 
   Sink<AuthState> get _input => _stream.sink;
   Stream<AuthState> get output => _stream.stream;
 
   AuthState _currentValue = const AuthState.unauthenticated();
   AuthState get current => _currentValue;
+  
+  Stream<AuthState> get authStream async* {
+    final authStateStr = await _secureStorate.read(key: "authState");
+
+    if (authStateStr == null) {
+      yield const AuthState.unauthenticated();
+    } else {
+      _currentValue = AuthState.fromJson(jsonDecode(authStateStr)); 
+      yield _currentValue;
+    }
+
+    yield* output;
+  }
+
 
   String get token {
     assert(_currentValue.status.hasToken);
@@ -26,6 +43,8 @@ class AuthStateController {
     _currentValue = value.status != AuthStatus.pending
       ? value
       : _currentValue;
+
+    unawaited(_secureStorate.write(key: "authState", value: jsonEncode(value)));
 
     _input.add(value);
   }
@@ -62,10 +81,7 @@ class VhomeRepository {
   final _authStateController = AuthStateController();
 
   // Auth
-  Stream<AuthState> get authStream async* {
-    yield const AuthState.unauthenticated();
-    yield* _authStateController.output;
-  }
+  Stream<AuthState> get authStream => _authStateController.authStream;
 
   AuthState get currentAuthStatus => _authStateController.current;
   

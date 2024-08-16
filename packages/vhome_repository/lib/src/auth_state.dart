@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:vhome_repository/vhome_repository.dart';
+import 'package:vhome_web_api/vhome_web_api.dart';
 
 enum AuthStatus {
   pending,
@@ -30,6 +30,15 @@ class AuthState extends Equatable {
  
   final AuthStatus status;
   final UserLogin? data;
+
+  AuthState.fromJson(JsonMap json) :
+    status = AuthStatus.values.firstWhere((e) => e.toString() == json['status']),
+    data = json['data'] != null ? UserLogin.fromJson(json['data']) : null;
+
+  JsonMap toJson() => {
+    'status': status.toString(),
+    'data': data?.toJson(), 
+  };
 
   @override
   List<Object?> get props => [status, data];
