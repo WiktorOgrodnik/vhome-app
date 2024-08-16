@@ -6,14 +6,15 @@ part 'task.g.dart';
 
 @JsonSerializable()
 class Task extends Equatable {
-  const Task({
+  Task({
     this.id = 0,
     required this.title,
     required this.content,
     this.completed = false,
     this.tasksetId = 0,
     required this.taskAssigned,
-  });
+    DateTime? lastUpdated,
+  }) : lastUpdated = lastUpdated ?? DateTime.now();
 
   factory Task.fromJson(JsonMap json) =>
     _$TaskFromJson(json);
@@ -28,6 +29,8 @@ class Task extends Equatable {
   final List<int> taskAssigned;
   @JsonKey(name: 'taskset_id')
   final int tasksetId;
+  @JsonKey(name: 'last_update')
+  final DateTime lastUpdated;
 
   Task copyWith({
     int? id,
@@ -36,6 +39,7 @@ class Task extends Equatable {
     bool? completed,
     int? tasksetId,
     List<int>? taskAssigned,
+    DateTime? lastUpdated,
   }) {
     return Task(
       id: id ?? this.id,
@@ -44,9 +48,10 @@ class Task extends Equatable {
       completed: completed ?? this.completed,
       tasksetId: tasksetId ?? this.tasksetId,
       taskAssigned: taskAssigned ?? this.taskAssigned,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
     );
   }
 
   @override
-  List<Object> get props => [id, title, content, completed, taskAssigned, tasksetId]; 
+  List<Object> get props => [id, title, content, completed, taskAssigned, tasksetId, lastUpdated];
 }

@@ -14,7 +14,7 @@ class TasksetTasksSummary extends StatelessWidget {
       create: (context) => TasksetDetailsBloc(
         repository: context.read<VhomeRepository>(),
         taskset: taskset,
-      )..add(TasksSubscriptionRequested()),
+      )..add(TasksSubscriptionRequested(summary: true)),
       child: TasksetTasksSummaryView(),
     );
   }

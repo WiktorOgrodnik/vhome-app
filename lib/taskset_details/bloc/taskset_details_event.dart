@@ -8,7 +8,12 @@ sealed class TasksetDetailsEvent extends Equatable {
 }
 
 final class TasksSubscriptionRequested extends TasksetDetailsEvent {
-  const TasksSubscriptionRequested();
+  const TasksSubscriptionRequested({this.summary = false});
+
+  final bool summary;
+
+  @override
+  List<Object> get props => [summary];
 }
 
 final class TasksetDeleted extends TasksetDetailsEvent {

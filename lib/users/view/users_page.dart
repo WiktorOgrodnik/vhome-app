@@ -36,7 +36,8 @@ class UsersView extends StatelessWidget {
       ),
       body: Padding(
         padding: EdgeInsets.all(20),
-        child: Center(
+        child: Container(
+          alignment: Alignment.topCenter,
           child: SizedBox(
             width: 1000,
             child: UsersList(),

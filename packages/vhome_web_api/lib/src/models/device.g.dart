@@ -16,7 +16,7 @@ Map<String, dynamic> _$DeviceTokenToJson(DeviceToken instance) =>
     };
 
 Thermometer _$ThermometerFromJson(Map<String, dynamic> json) => Thermometer(
-      id: (json['id'] as num?)?.toInt() ?? 0,
+      id: (json['id'] as num).toInt(),
       name: json['name'] as String,
       deviceType: $enumDecodeNullable(_$DeviceTypeEnumMap, json['dev_t']) ??
           DeviceType.thermometer,

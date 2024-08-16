@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:vhome_frontend/add_task/view/view.dart';
+import 'package:vhome_frontend/task_details/view/view.dart';
 import 'package:vhome_frontend/taskset_details/bloc/taskset_details_bloc.dart';
 import 'package:vhome_frontend/users/users.dart';
 import 'package:vhome_frontend/widgets/widgets.dart';
@@ -54,7 +54,7 @@ class TaskStandardTile extends StatelessWidget {
             textColor: theme.colorScheme.onPrimary,
             onTap: () => 
               Navigator.of(context).push(
-                AddTaskPage.route(task: task)
+                TaskDetailsPage.route(task)
               ),
           ),
         );

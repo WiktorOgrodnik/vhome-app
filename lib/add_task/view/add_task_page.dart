@@ -40,12 +40,6 @@ class AddTaskPage extends StatelessWidget {
         ),
         BlocListener<AddTaskBloc, AddTaskState>(
           listenWhen: (previous, current) =>
-            previous.status != current.status &&
-            current.status == AddDeviceStatus.deleted,
-          listener: (context, state) => Navigator.of(context).pop(),
-        ),
-        BlocListener<AddTaskBloc, AddTaskState>(
-          listenWhen: (previous, current) =>
             previous.formStatus != current.formStatus &&
             current.formStatus.isFailure,
           listener: (context, state) => 
@@ -74,25 +68,11 @@ class AddTaskView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final display = context.read<VhomeRepository>().display;
-
     return Scaffold(
       appBar: AppBar(
         title: editable
           ? Text("Editing task ${task!.title}")
           : Text("Add task to ${taskset!.title}"),
-        actions: [
-          if (editable && !display)
-            IconButton(
-              onPressed: () {
-                context
-                  .read<AddTaskBloc>()
-                  .add(TaskDeleted(task: task!));
-              },
-              tooltip: "Delete task",
-              icon: const Icon(Icons.delete),
-            ),
-        ],
       ),
       body: Container(
         alignment: Alignment.topCenter,
@@ -108,12 +88,7 @@ class AddTaskView extends StatelessWidget {
                     _TitleField(initialValue: editable ? task!.title : null),
                     SizedBox(height: 25),
                     _ContentField(initialValue: editable ? task!.content : null),
-                    if (editable) 
                     SizedBox(height: 25),
-                    if (editable) 
-                    _AssignMultiSelect(),
-                    SizedBox(height: 25),
-                    if (!display)
                     _AcceptButton(editable),
                   ],
                 ),
@@ -168,27 +143,6 @@ class _ContentField extends StatelessWidget {
   }
 }
 
-class _AssignMultiSelect extends StatelessWidget {
-  const _AssignMultiSelect();
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => UsersBloc(repository: context.read<VhomeRepository>())
-        ..add(UsersSubscriptionRequested()),
-      child: BlocBuilder<UsersBloc, UsersState>(
-        buildWhen: (previous, current) => previous.status != current.status,
-        builder: (context, state) {
-          return SizedBox(
-            height: 400,
-            child: UsersList(editing: true),
-          );
-        }
-      ),
-    );
-  }
-}
-
 class _AcceptButton extends StatelessWidget {
   const _AcceptButton(this.editable);
 
@@ -202,7 +156,9 @@ class _AcceptButton extends StatelessWidget {
         ? const CircularProgressIndicator()
         : ConfirmButton(
             onPressed: state.isValid 
-              ? () => context.read<AddTaskBloc>().add(const AddTaskSubmitted())
+              ? () => context
+                        .read<AddTaskBloc>()
+                        .add(const AddTaskSubmitted())
               : null,
             child: editable 
               ? Text("Edit task")

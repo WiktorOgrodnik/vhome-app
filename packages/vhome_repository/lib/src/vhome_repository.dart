@@ -167,11 +167,15 @@ class VhomeRepository {
 
   // Tasks
 
+  Stream<Task> getTask(int taskId)
+    => _taskApi.getTask(_authStateController.token, taskId);
   Stream<List<Task>> getTasks(int tasksetId)
     => _taskApi.getTasks(_authStateController.token, tasksetId);
+  Stream<List<Task>> getTasksRecentChanges(int tasksetId, int limit)
+    => _taskApi.getTasksRecentChanges(_authStateController.token, tasksetId, limit);
   Future<void> toggleTaskCompletion(Task task, bool value)
     => _taskApi.changeCompleted(_authStateController.token, task, value);
-  Future<void> changeAssign(int task, User user, bool value)
+  Future<void> changeAssign(int task, int user, bool value)
     => _taskApi.changeAssign(_authStateController.token, task, user, value);
   Future<void> addTask(Task task)
     => _taskApi.add(_authStateController.token, task.tasksetId, task.title, task.content);

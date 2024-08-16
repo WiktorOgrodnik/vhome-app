@@ -10,9 +10,24 @@ class TaskApi {
   final _tasksOutdated$ = BehaviorSubject<void>.seeded(null);
 
   Stream<void> get tasksOutdated$ => _tasksOutdated$.asBroadcastStream();
-  Stream<List<Task>> getTasks(String token, int tasksetId, {int? limit}) =>
+  Stream<List<Task>> getTasks(String token, int tasksetId) =>
     _tasksOutdated$.switchMap((_) => 
       Stream.fromFuture(_fetchTasks(token, tasksetId))).asBroadcastStream();
+
+  Stream<List<Task>> getTasksRecentChanges(String token, int tasksetId, int limit) =>
+    _tasksOutdated$.switchMap((_) =>
+      Stream.fromFuture(_fetchTasks(token, tasksetId))
+    ).map((list) {
+        list = list.where((task) => !task.completed).toList();
+        list.sort((a, b) => -a.lastUpdated.compareTo(b.lastUpdated));
+
+        return list.take(limit).toList();
+      }).asBroadcastStream();
+
+  Stream<Task> getTask(String token, int taskId) =>
+    _tasksOutdated$.switchMap((_) =>
+      Stream.fromFuture(_fetchTask(token, taskId))
+    ).asBroadcastStream();
 
   Future<Task> _taskFromJsonWithAssigns(String token, JsonMap taskMap) async {
     final id = taskMap['id'];
@@ -25,6 +40,19 @@ class TaskApi {
 
     responseData.addAll(taskMap);
     return Task.fromJson(responseData);
+  }
+
+  Future<Task> _fetchTask(String token, int taskId) async {
+    final uri = Uri.parse("$apiUrl/task/$taskId");
+    final response = await http.get(uri, headers: {'Authorization': token} );
+    final dynamic responseData = response.statusCode == HttpStatus.ok ?
+      jsonDecode(utf8.decode(response.bodyBytes)) : null;
+
+    if (responseData == null) {
+      throw Exception("Can not fetch task!");
+    }
+
+    return _taskFromJsonWithAssigns(token, responseData);
   }
 
   Future<List<Task>> _fetchTasks(String token, int tasksetId) async {
@@ -44,16 +72,17 @@ class TaskApi {
     final response = await http.put(uri, headers: { 'Authorization': token });
 
     if (response.statusCode != HttpStatus.ok) {
+      print(response.statusCode);
       throw Exception("Cannot toggle completition of the task");
     }
 
     _tasksOutdated$.add(null);
   }
 
-  Future<void> changeAssign(String token, int task, User user, bool value) async {
+  Future<void> changeAssign(String token, int task, int user, bool value) async {
     final uri = value ? 
-      Uri.parse("$apiUrl/task/$task/assign/${user.id}") :
-      Uri.parse("$apiUrl/task/$task/unassign/${user.id}");
+      Uri.parse("$apiUrl/task/$task/assign/$user") :
+      Uri.parse("$apiUrl/task/$task/unassign/$user");
 
     final response = await http.put(uri, headers: { 'Authorization': token });
 
@@ -107,11 +136,13 @@ class TaskApi {
   }
 
   Future<void> delete(String token, Task task) async {
+    print(task);
     final uri = Uri.parse("$apiUrl/task/${task.id}");
 
     final response = await http.delete(uri, headers: {'Authorization': token});
 
     if (response.statusCode != HttpStatus.ok) {
+      print(response.statusCode);
       throw Exception("Can not deleted the task");
     }
 

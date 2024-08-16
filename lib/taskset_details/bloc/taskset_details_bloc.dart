@@ -24,7 +24,9 @@ class TasksetDetailsBloc extends Bloc<TasksetDetailsEvent, TasksetDetailsState> 
     emit(state.copyWith(status: () => TasksetDetailsStatus.loading));
 
     await emit.forEach(
-      _repository.getTasks(state.taskset.id),
+      event.summary
+        ? _repository.getTasksRecentChanges(state.taskset.id, 3)
+        : _repository.getTasks(state.taskset.id),
       onData: (tasks) {
         return state.copyWith(
           status: () => TasksetDetailsStatus.success,

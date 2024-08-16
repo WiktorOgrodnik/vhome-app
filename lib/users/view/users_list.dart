@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:vhome_frontend/add_task/bloc/add_task_bloc.dart';
+import 'package:vhome_frontend/task_details/bloc/task_details_bloc.dart';
 import 'package:vhome_frontend/users/bloc/users_bloc.dart';
 import 'package:vhome_frontend/users/users.dart';
 import 'package:vhome_frontend/widgets/widgets.dart';
@@ -13,12 +13,9 @@ class UsersList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    final addTaskState = editing
-        ? context.select((AddTaskBloc bloc) => bloc.state)
+    final taskServiceState = editing
+        ? context.select((TaskDetailsBloc bloc) => bloc.state)
         : null;
-
-    final taskAssigned = addTaskState != null ? addTaskState.taskAssigned : [];
-    final taskId = addTaskState != null ? addTaskState.id : 0;
 
     return BlocBuilder<UsersBloc, UsersState>(
       builder: (context, state) {
@@ -29,9 +26,9 @@ class UsersList extends StatelessWidget {
             return state.users.isEmpty ?
               const Center(child: Text("No users in this group.")) :
               ListView.separated(
-                physics: NeverScrollableScrollPhysics(),
                 itemCount: state.users.length,
                 separatorBuilder: (context, index) => const Divider(),
+                shrinkWrap: true,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: EdgeInsets.symmetric(vertical: 6),
@@ -43,16 +40,14 @@ class UsersList extends StatelessWidget {
                       ),
                       trailing: editing
                         ? Checkbox(
-                            value: taskAssigned.contains(state.users[index].id),
+                            value: taskServiceState!
+                                      .task
+                                      .taskAssigned
+                                      .contains(state.users[index].id),
                             onChanged: (value) {
-                              context
-                                .read<AddTaskBloc>()
-                                .add(AddTaskAssignUser(user: state.users[index].id, add: value!));
-
-                              context.read<UsersBloc>().add(UserTaskAssigned(
-                                task: taskId,
-                                user: state.users[index],
-                                value: value,
+                              context.read<TaskDetailsBloc>().add(TaskAssignUser(
+                                user: state.users[index].id,
+                                add: value!,
                               ));
                             }
                           )
