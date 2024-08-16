@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:localstorage/localstorage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vhome_repository/src/auth_state.dart';
 import 'package:vhome_web_api/vhome_web_api.dart';
 
@@ -10,7 +11,6 @@ export 'auth_state.dart';
 
 class AuthStateController {
   final StreamController<AuthState> _stream = StreamController<AuthState>();
-  final _secureStorate = const FlutterSecureStorage();
 
   Sink<AuthState> get _input => _stream.sink;
   Stream<AuthState> get output => _stream.stream;
@@ -19,7 +19,8 @@ class AuthStateController {
   AuthState get current => _currentValue;
   
   Stream<AuthState> get authStream async* {
-    final authStateStr = await _secureStorate.read(key: "authState");
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final authStateStr = prefs.getString("authState");
 
     if (authStateStr == null) {
       yield const AuthState.unauthenticated();
@@ -31,7 +32,6 @@ class AuthStateController {
     yield* output;
   }
 
-
   String get token {
     assert(_currentValue.status.hasToken);
     assert(_currentValue.data != null);
@@ -39,12 +39,14 @@ class AuthStateController {
     return _currentValue.data!.token;
   }
 
-  void update(AuthState value) {
+  Future<void> update(AuthState value) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
     _currentValue = value.status != AuthStatus.pending
       ? value
       : _currentValue;
 
-    unawaited(_secureStorate.write(key: "authState", value: jsonEncode(value)));
+    prefs.setString("authState", jsonEncode(value));
 
     _input.add(value);
   }
