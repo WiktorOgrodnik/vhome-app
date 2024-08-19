@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:localstorage/localstorage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vhome_repository/src/auth_state.dart';
 import 'package:vhome_web_api/vhome_web_api.dart';

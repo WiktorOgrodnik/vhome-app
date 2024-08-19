@@ -28,6 +28,8 @@ dependencies:
   qr_flutter: ^4.1.0
   mobile_scanner: ^4.0.1
   shared_preferences: ^2.3.2
+  flutter_dotenv: ^5.1.0
+  screen_state: ^4.0.0
 
 dev_dependencies:
   flutter_test:
@@ -39,3 +41,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/profile_picture.png
+    - .env

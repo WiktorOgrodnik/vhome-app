@@ -15,16 +15,22 @@ class TasksetList extends StatelessWidget {
               return Center(child: Text("No tasksets yet."));
             }
 
-            return SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Wrap(
-                children: [
-                  for (var taskset in state.tasksets)
-                    Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: TasksetTile(taskset: taskset),
-                    ),
-                ],
+            return RefreshIndicator(
+              onRefresh: () async =>
+                context
+                  .read<TasksetsBloc>()
+                  .add(TasksetsRefreshed()),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Wrap(
+                  children: [
+                    for (var taskset in state.tasksets)
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: TasksetTile(taskset: taskset),
+                      ),
+                  ],
+                ),
               ),
             );
           default:

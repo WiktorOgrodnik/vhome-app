@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
@@ -28,7 +27,6 @@ class UserApi {
     final bytes = response.statusCode == HttpStatus.ok
         ? response.bodyBytes
         : (await rootBundle.load("assets/profile_picture.png")).buffer.asUint8List();
-        // : await File.fromUri(Uri.parse("assets/profile_picture.png")).readAsBytes();
     
     return bytes;
   }

@@ -11,6 +11,10 @@ final class TaskSubscriptionRequested extends TaskDetailsEvent {
   const TaskSubscriptionRequested();
 }
 
+final class TaskRefreshed extends TaskDetailsEvent {
+  const TaskRefreshed();
+}
+
 final class TaskDeleted extends TaskDetailsEvent {
   const TaskDeleted();
 }
@@ -35,3 +39,4 @@ final class TaskCompletionToggled extends TaskDetailsEvent {
   @override
   List<Object> get props => [value];
 }
+

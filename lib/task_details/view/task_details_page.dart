@@ -102,118 +102,125 @@ class TaskDetailsView extends StatelessWidget {
                 alignment: Alignment.topCenter,
                 child: SizedBox(
                   width: 1200,
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: Wrap(
-                        children: [
-                          ConstrainedBox(
-                            constraints: BoxConstraints(minWidth: 300),
-                            child: FractionallySizedBox(
-                              widthFactor: constraints.maxWidth >= 745 ? 0.6 : 1.0,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 6.0),
-                                      child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                            child: Transform.scale(
-                                              scale: 1.2,
-                                              child: Checkbox(
-                                                value: state.task.completed,
-                                                onChanged: (bool? val) =>
-                                                  context
-                                                    .read<TaskDetailsBloc>()
-                                                    .add(TaskCompletionToggled(value: val!)),
-                                              ),
-                                            ),
-                                          ),
-                                          Flexible(
-                                            child: Padding(
-                                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                              child: DefaultTextStyle(
-                                                style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 35,
-                                                  fontWeight: FontWeight.bold,
-                                                  decoration: state.task.completed
-                                                      ? TextDecoration.lineThrough
-                                                      : null,
+                    child: RefreshIndicator(
+                      onRefresh: () async =>
+                        context
+                          .read<TaskDetailsBloc>()
+                          .add(const TaskRefreshed()),
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        scrollDirection: Axis.vertical,
+                        child: Wrap(
+                          children: [
+                            ConstrainedBox(
+                              constraints: BoxConstraints(minWidth: 300),
+                              child: FractionallySizedBox(
+                                widthFactor: constraints.maxWidth >= 745 ? 0.6 : 1.0,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 6.0),
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                              child: Transform.scale(
+                                                scale: 1.2,
+                                                child: Checkbox(
+                                                  value: state.task.completed,
+                                                  onChanged: (bool? val) =>
+                                                    context
+                                                      .read<TaskDetailsBloc>()
+                                                      .add(TaskCompletionToggled(value: val!)),
                                                 ),
-                                                child: Text(state.task.title),
                                               ),
                                             ),
+                                            Flexible(
+                                              child: Padding(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                                child: DefaultTextStyle(
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 35,
+                                                    fontWeight: FontWeight.bold,
+                                                    decoration: state.task.completed
+                                                        ? TextDecoration.lineThrough
+                                                        : null,
+                                                  ),
+                                                  child: Text(state.task.title),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const Padding(
+                                        padding: EdgeInsets.symmetric(vertical: 8.0),
+                                        child: DefaultTextStyle(
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 25,
+                                            fontWeight: FontWeight.bold,
                                           ),
-                                        ],
-                                      ),
-                                    ),
-                                    const Padding(
-                                      padding: EdgeInsets.symmetric(vertical: 8.0),
-                                      child: DefaultTextStyle(
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.bold,
+                                          child: Text("Task content:")
                                         ),
-                                        child: Text("Task content:")
                                       ),
-                                    ),
-                                    SizedBox(
-                                      width: 600,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                        child: Text(state.task.content),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(vertical: 8.0),
-                                      child: DefaultTextStyle(
-                                        style: const TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 17,
-                                          fontStyle: FontStyle.italic,
+                                      SizedBox(
+                                        width: 600,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                          child: Text(state.task.content),
                                         ),
-                                        child: Text("Last updated: ${DateFormat('yyyy-MM-dd – kk:mm').format(state.task.lastUpdated.toLocal())}"),
                                       ),
-                                    )
-                                  ],
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(vertical: 8.0),
+                                        child: DefaultTextStyle(
+                                          style: const TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 17,
+                                            fontStyle: FontStyle.italic,
+                                          ),
+                                          child: Text("Last updated: ${DateFormat('yyyy-MM-dd – kk:mm').format(state.task.lastUpdated.toLocal())}"),
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          ConstrainedBox(
-                            constraints: BoxConstraints(minWidth: 300.0),
-                            child: FractionallySizedBox(
-                              widthFactor: constraints.maxWidth > 745 ? 0.4 : 1.0,
-                              child: Column(
-                                children: [
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: SectionTitle(child: Text("Assigned users")),
-                                  ),
-                                  ConstrainedBox(
-                                    constraints: const BoxConstraints(
-                                      maxHeight: 800.0,
+                            ConstrainedBox(
+                              constraints: BoxConstraints(minWidth: 300.0),
+                              child: FractionallySizedBox(
+                                widthFactor: constraints.maxWidth > 745 ? 0.4 : 1.0,
+                                child: Column(
+                                  children: [
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: SectionTitle(child: Text("Assigned users")),
                                     ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                                      child: BlocProvider(
-                                        create: (context) => UsersBloc(repository: context.read<VhomeRepository>())
-                                          ..add(const UsersSubscriptionRequested()),
-                                        child: UsersList(editing: true)
+                                    ConstrainedBox(
+                                      constraints: const BoxConstraints(
+                                        maxHeight: 800.0,
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                        child: BlocProvider(
+                                          create: (context) => UsersBloc(repository: context.read<VhomeRepository>())
+                                            ..add(const UsersSubscriptionRequested()),
+                                          child: UsersList(editing: true)
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              )
+                                  ],
+                                )
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),

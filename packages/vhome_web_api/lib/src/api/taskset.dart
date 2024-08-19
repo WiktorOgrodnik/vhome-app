@@ -3,19 +3,30 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:rxdart/rxdart.dart';
+import 'package:screen_state/screen_state.dart';
 import 'package:vhome_web_api/vhome_web_api.dart';
 import 'package:http/http.dart' as http;
 
 class TasksetApi {
   TasksetApi();
+  final _screen = Screen();
 
-  final _tasksetOutdated = BehaviorSubject<void>.seeded(null);
+  final _tasksetPeriodicUpdate$ = RepeatStream<void>((_) => TimerStream<void>(null, const Duration(minutes: 1))).asBroadcastStream();
+  final _tasksetOutdated$ = BehaviorSubject<void>.seeded(null);
+  Stream<ScreenStateEvent> get _screenUnlockStream$ =>
+    _screen.screenStateStream.where((elt) => elt == ScreenStateEvent.SCREEN_UNLOCKED);
 
-  Stream<void> tasksetOutdated() => _tasksetOutdated.asBroadcastStream();
-  Stream<List<Taskset>> getTasksets(String token) => 
-    _tasksetOutdated.switchMap((_) => Stream.fromFuture(fetchTasksets(token))).asBroadcastStream();
+  Stream<List<Taskset>> getTasksets(String token) =>
+    Rx.merge([
+      _tasksetPeriodicUpdate$,
+      _tasksetOutdated$,
+      if (Platform.isAndroid)
+      _screenUnlockStream$,
+    ]).switchMap((_) =>
+      Stream.fromFuture(_fetchTasksets(token))
+    ).asBroadcastStream();
 
-  Future<List<Taskset>> fetchTasksets(String token) async {
+  Future<List<Taskset>> _fetchTasksets(String token) async {
     final uri = Uri.parse("$apiUrl/tasksets");
     final response = await http.get(uri, headers: { 'Authorization': token } );
     
@@ -47,7 +58,7 @@ class TasksetApi {
       throw Exception("Failed to add taskset.");
     }
 
-    _tasksetOutdated.add(null);
+    _tasksetOutdated$.add(null);
   }
 
   Future<void> deleteTaskset(String token, Taskset taskset) async {
@@ -58,10 +69,10 @@ class TasksetApi {
       throw Exception("g");
     }
 
-    _tasksetOutdated.add(null);
+    _tasksetOutdated$.add(null);
   }
 
   void refreshTasksets() {
-    _tasksetOutdated.add(null);
+    _tasksetOutdated$.add(null);
   }
 }

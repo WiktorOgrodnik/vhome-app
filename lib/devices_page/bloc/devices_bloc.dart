@@ -10,7 +10,7 @@ class DevicesBloc extends Bloc<DevicesEvent, DevicesState> {
     required VhomeRepository repository
   }) : _repository = repository, super(const DevicesState()) {
     on<DevicesSubscriptionRequested>(_onDevicesSubscriptionRequested);
-    on<DevicesRefresh>(_onDevicesRefresh);
+    on<DevicesRefreshed>(_onDevicesRefreshed);
   }
   
   final VhomeRepository _repository;
@@ -33,8 +33,8 @@ class DevicesBloc extends Bloc<DevicesEvent, DevicesState> {
     );
   }
 
-  void _onDevicesRefresh(
-    DevicesRefresh event,
+  void _onDevicesRefreshed(
+    DevicesRefreshed event,
     Emitter<DevicesState> emit,
   ) {
     _repository.refreshDevices();

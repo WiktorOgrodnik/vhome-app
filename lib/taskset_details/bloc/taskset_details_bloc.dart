@@ -11,6 +11,7 @@ class TasksetDetailsBloc extends Bloc<TasksetDetailsEvent, TasksetDetailsState> 
       required Taskset taskset,
     }) : _repository = repository, super(TasksetDetailsState(taskset: taskset)) {
     on<TasksSubscriptionRequested>(_onTasksSubscriptionRequested);
+    on<TasksRefreshed>(_onTasksRefresh);
     on<TaskCompletionToggled>(_onTaskCompletionToggled);
     on<TasksetDeleted>(_onTasksetDeleted);
   }
@@ -37,6 +38,13 @@ class TasksetDetailsBloc extends Bloc<TasksetDetailsEvent, TasksetDetailsState> 
         status: () => TasksetDetailsStatus.failure,
       ),
     );
+  }
+
+  void _onTasksRefresh(
+    TasksRefreshed event,
+    Emitter<TasksetDetailsState> emit,
+  ) {
+    _repository.refreshTasks();
   }
 
   Future<void> _onTaskCompletionToggled(

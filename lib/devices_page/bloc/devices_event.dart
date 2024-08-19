@@ -11,6 +11,6 @@ final class DevicesSubscriptionRequested extends DevicesEvent {
   const DevicesSubscriptionRequested();
 }
 
-final class DevicesRefresh extends DevicesEvent {
-  const DevicesRefresh();
+final class DevicesRefreshed extends DevicesEvent {
+  const DevicesRefreshed();
 }

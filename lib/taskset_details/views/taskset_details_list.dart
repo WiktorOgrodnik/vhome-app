@@ -22,20 +22,26 @@ class TasksetDetailsList extends StatelessWidget {
           case TasksetDetailsStatus.success:
             return state.tasks.isEmpty ?
               const Center(child: Text("No tasks yet.")) :
-              ListView.builder(
-                physics: summary 
-                          ? NeverScrollableScrollPhysics()
-                          : AlwaysScrollableScrollPhysics(),
-                itemCount: summary ? min(state.tasks.length, 3) : state.tasks.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(vertical: 6),
-                    child: TaskStandardTile(
-                      task: state.tasks[index],
-                      editable: !summary,
-                    ),
-                  );
-                }
+              RefreshIndicator(
+                onRefresh: () async =>
+                  context
+                    .read<TasksetDetailsBloc>()
+                    .add(const TasksRefreshed()),
+                child: ListView.builder(
+                  physics: summary
+                            ? NeverScrollableScrollPhysics()
+                            : AlwaysScrollableScrollPhysics(),
+                  itemCount: summary ? min(state.tasks.length, 3) : state.tasks.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 6),
+                      child: TaskStandardTile(
+                        task: state.tasks[index],
+                        editable: !summary,
+                      ),
+                    );
+                  }
+                ),
               );
           default:
             return const Center(child: CircularProgressIndicator());

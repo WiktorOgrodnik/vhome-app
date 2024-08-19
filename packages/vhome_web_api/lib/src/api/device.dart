@@ -3,17 +3,32 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:rxdart/rxdart.dart';
+import 'package:screen_state/screen_state.dart';
 import 'package:vhome_web_api/vhome_web_api.dart';
 import 'package:http/http.dart' as http;
 
 class DeviceApi {
   DeviceApi();
+  final _screen = Screen();
 
-  final _devicesOutdated = BehaviorSubject<void>.seeded(null);
+  final _devicesPeriodicUpdate$ = RepeatStream<void>((_) => TimerStream<void>(null, const Duration(minutes: 1))).asBroadcastStream();
+  final _devicesOutdated$ = BehaviorSubject<void>.seeded(null);
+  Stream<ScreenStateEvent> get _screenUnlockStream$ =>
+    _screen.screenStateStream.where((elt) => elt == ScreenStateEvent.SCREEN_UNLOCKED);
 
-  Stream<void> get devicesOutdated$ => _devicesOutdated.asBroadcastStream();
-  Stream<List<Device>> getDevices(String token) => 
-    _devicesOutdated.switchMap((_) => Stream.fromFuture(fetchDevices(token))).asBroadcastStream();
+  Stream<List<Device>> getDevices(String token) =>
+    Rx.merge([
+      _devicesPeriodicUpdate$,
+      _devicesOutdated$,
+      if (Platform.isAndroid)
+      _screenUnlockStream$,
+    ]).switchMap((_) =>
+      Stream.fromFuture(fetchDevices(token))
+    ).map((list) {
+      list.sort((a, b) => -a.lastUpdated.compareTo(b.lastUpdated));
+
+      return list;
+    }).asBroadcastStream();
 
   Future<List<Device>> fetchDevices(String token) async {
     final uri = Uri.parse("$apiUrl/devices");
@@ -71,6 +86,6 @@ class DeviceApi {
   }
 
   void refreshDevices() {
-    _devicesOutdated.add(null);
+    _devicesOutdated$.add(null);
   }
 }

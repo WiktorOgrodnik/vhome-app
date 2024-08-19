@@ -15,16 +15,23 @@ class DevicesList extends StatelessWidget {
               return Center(child: Text("No devices yet."));
             }
 
-            return SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Wrap(
-                children: [
-                  for (var device in state.devices)
-                    Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: DeviceTile(device: device),
-                    ),
-                ],
+            return RefreshIndicator(
+              onRefresh: () async =>
+                context
+                  .read<DevicesBloc>()
+                  .add(DevicesRefreshed()),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Wrap(
+                  children: [
+                    for (var device in state.devices)
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: DeviceTile(device: device),
+                      ),
+                  ],
+                ),
               ),
             );
           default:

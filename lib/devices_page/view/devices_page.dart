@@ -31,7 +31,7 @@ class TasksetsView extends StatelessWidget {
             onPressed: () =>
               context
                 .read<DevicesBloc>()
-                .add(const DevicesRefresh()),
+                .add(const DevicesRefreshed()),
           )
         : FloatingActionButton(
             child: Icon(Icons.add),

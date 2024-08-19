@@ -11,6 +11,7 @@ class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
       required Task task,
     }) : _repository = repository, super(TaskDetailsState(task: task)) {
     on<TaskSubscriptionRequested>(_onTaskSubscriptionRequested);
+    on<TaskRefreshed>(_onTaskRefreshed);
     on<TaskDeleted>(_onTasksetDeleted);
     on<TaskAssignUser>(_onTaskAssignUser);
     on<TaskCompletionToggled>(_onTaskCompletionToggled);
@@ -36,6 +37,13 @@ class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
         status: () => TaskDetailsStatus.failure,
       ),
     );
+  }
+
+  void _onTaskRefreshed(
+    TaskRefreshed event,
+    Emitter<TaskDetailsState> emit,
+  ) {
+    _repository.refreshTasks();
   }
 
   Future<void> _onTasksetDeleted(

@@ -1,21 +1,41 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:rxdart/rxdart.dart';
+import 'package:screen_state/screen_state.dart';
 import 'package:vhome_web_api/vhome_web_api.dart';
 import 'package:http/http.dart' as http;
 
 class TaskApi {
   TaskApi();
+  final _screen = Screen();
 
+  final _tasksPeriodicUpdate$ = RepeatStream<void>((_) => TimerStream<void>(null, const Duration(minutes: 1))).asBroadcastStream();
   final _tasksOutdated$ = BehaviorSubject<void>.seeded(null);
+  Stream<ScreenStateEvent> get _screenUnlockStream$ =>
+    _screen.screenStateStream.where((elt) => elt == ScreenStateEvent.SCREEN_UNLOCKED);
 
-  Stream<void> get tasksOutdated$ => _tasksOutdated$.asBroadcastStream();
   Stream<List<Task>> getTasks(String token, int tasksetId) =>
-    _tasksOutdated$.switchMap((_) => 
-      Stream.fromFuture(_fetchTasks(token, tasksetId))).asBroadcastStream();
+    Rx.merge([
+      _tasksOutdated$,
+      _tasksPeriodicUpdate$,
+      if (Platform.isAndroid)
+      _screenUnlockStream$,
+    ]).switchMap((_) =>
+        Stream.fromFuture(_fetchTasks(token, tasksetId))
+      ).map((list) {
+        list.sort((a, b) => a.completed == b.completed ? 0 : (a.completed ? 1 : -1));
+
+        return list;
+      }).asBroadcastStream();
 
   Stream<List<Task>> getTasksRecentChanges(String token, int tasksetId, int limit) =>
-    _tasksOutdated$.switchMap((_) =>
+    Rx.merge([
+      _tasksOutdated$,
+      _tasksPeriodicUpdate$,
+      if (Platform.isAndroid)
+      _screenUnlockStream$,
+    ]).switchMap((_) =>
       Stream.fromFuture(_fetchTasks(token, tasksetId))
     ).map((list) {
         list = list.where((task) => !task.completed).toList();
@@ -25,7 +45,12 @@ class TaskApi {
       }).asBroadcastStream();
 
   Stream<Task> getTask(String token, int taskId) =>
-    _tasksOutdated$.switchMap((_) =>
+    Rx.merge([
+      _tasksPeriodicUpdate$,
+      _tasksOutdated$,
+      if (Platform.isAndroid)
+      _screenUnlockStream$,
+    ]).switchMap((_) =>
       Stream.fromFuture(_fetchTask(token, taskId))
     ).asBroadcastStream();
 
@@ -45,8 +70,9 @@ class TaskApi {
   Future<Task> _fetchTask(String token, int taskId) async {
     final uri = Uri.parse("$apiUrl/task/$taskId");
     final response = await http.get(uri, headers: {'Authorization': token} );
-    final dynamic responseData = response.statusCode == HttpStatus.ok ?
-      jsonDecode(utf8.decode(response.bodyBytes)) : null;
+    final dynamic responseData = response.statusCode == HttpStatus.ok
+        ? jsonDecode(utf8.decode(response.bodyBytes))
+        : null;
 
     if (responseData == null) {
       throw Exception("Can not fetch task!");
@@ -72,7 +98,6 @@ class TaskApi {
     final response = await http.put(uri, headers: { 'Authorization': token });
 
     if (response.statusCode != HttpStatus.ok) {
-      print(response.statusCode);
       throw Exception("Cannot toggle completition of the task");
     }
 

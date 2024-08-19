@@ -50,7 +50,7 @@ class TaskStandardTile extends StatelessWidget {
               ) : null,
             ),
             trailing: UserAssignMultiIcon(taskAssignes: task.taskAssigned),
-            tileColor: theme.colorScheme.primary,
+            tileColor: task.completed ? theme.colorScheme.secondary : theme.colorScheme.primary,
             textColor: theme.colorScheme.onPrimary,
             onTap: () => 
               Navigator.of(context).push(
