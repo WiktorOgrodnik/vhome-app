@@ -21,7 +21,7 @@ dependencies:
   vhome_repository:
     path: packages/vhome_repository
   rxdart: ^0.28.0
-  intl: ^0.19.0
+  intl: ^0.18.0
   formz: ^0.7.0
   file_selector_linux: ^0.9.2+1
   file_selector: ^1.0.3
@@ -30,6 +30,7 @@ dependencies:
   shared_preferences: ^2.3.2
   flutter_dotenv: ^5.1.0
   screen_state: ^4.0.0
+  syncfusion_flutter_charts: ^22.2.9
 
 dev_dependencies:
   flutter_test:

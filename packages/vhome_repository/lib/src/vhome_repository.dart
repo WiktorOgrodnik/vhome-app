@@ -58,6 +58,7 @@ class AuthStateController {
 class VhomeRepository {
   VhomeRepository({
     required DeviceApi deviceApi,
+    required MeasurementApi measurementApi,
     required GroupApi groupApi,
     required TasksetApi tasksetApi,
     required TaskApi taskApi,
@@ -65,6 +66,7 @@ class VhomeRepository {
     required UserApi userApi,
     this.display = false,
   }) : _deviceApi = deviceApi,
+       _measurementApi = measurementApi,
        _groupApi = groupApi,
        _tasksetApi = tasksetApi,
        _taskApi = taskApi,
@@ -72,6 +74,7 @@ class VhomeRepository {
        _userApi = userApi;
 
   final DeviceApi _deviceApi;
+  final MeasurementApi _measurementApi;
   final GroupApi _groupApi;
   final TasksetApi _tasksetApi;
   final TaskApi _taskApi;
@@ -205,8 +208,14 @@ class VhomeRepository {
 
   Stream<List<Device>> getDevices()
     => _deviceApi.getDevices(_authStateController.token);
+  Stream<Device> getDevice(int deviceId)
+    => _deviceApi.getDevice(_authStateController.token, deviceId);
   Future<DeviceToken> addDevice(String name, DeviceType type)
     => _deviceApi.addDevice(_authStateController.token, name, type);
+
+  // Measurements
+  Future<List<Measurement>> getMeasurements(int deviceId, MeasurementTimeRange timeRange)
+    => _measurementApi.getMeasurements(_authStateController.token, deviceId, timeRange);
 
   // Groups
 

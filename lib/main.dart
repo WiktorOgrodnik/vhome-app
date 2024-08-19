@@ -9,6 +9,7 @@ Future main() async {
   await dotenv.load();
 
   final deviceApi = DeviceApi();
+  final measurementApi = MeasurementApi();
   final groupApi = GroupApi();
   final tasksetApi = TasksetApi();
   final taskApi = TaskApi();
@@ -17,6 +18,7 @@ Future main() async {
 
   VhomeRepository vhomeRepository = VhomeRepository(
     deviceApi: deviceApi,
+    measurementApi: measurementApi,
     groupApi: groupApi,
     tasksetApi: tasksetApi,
     taskApi: taskApi,

@@ -30,6 +30,16 @@ class DeviceApi {
       return list;
     }).asBroadcastStream();
 
+  Stream<Device> getDevice(String token, int deviceId) =>
+    Rx.merge([
+      _devicesPeriodicUpdate$,
+      _devicesOutdated$,
+      if (Platform.isAndroid)
+      _screenUnlockStream$, 
+    ]).switchMap((_) =>
+      Stream.fromFuture(_fetchDevice(token, deviceId))
+    ).asBroadcastStream();
+
   Future<List<Device>> fetchDevices(String token) async {
     final uri = Uri.parse("$apiUrl/devices");
     final response = await http.get(uri, headers: { 'Authorization': token } );
@@ -61,6 +71,31 @@ class DeviceApi {
     }
 
     return devices; 
+  }
+
+  Future<Device> _fetchDevice(String token, int deviceId) async {
+    final uri = Uri.parse("$apiUrl/device/$deviceId");
+    final response = await http.get(uri, headers: { 'Authorization': token } );
+
+    if (response.statusCode != HttpStatus.ok) {
+      throw Exception("Can not get the device $deviceId");
+    }
+
+    final JsonMap data = jsonDecode(utf8.decode(response.bodyBytes));
+    final deviceType = data['dev_t'];
+    final uriDetails = Uri.parse("$apiUrl/$deviceType/$deviceId");
+    final responseDetails = await http.get(uriDetails, headers: { 'Authorization': token });
+
+    if (responseDetails.statusCode != HttpStatus.ok) {
+      throw Exception("Can not get the $deviceType");
+    }
+
+    final dynamic dataDetails = jsonDecode(utf8.decode(responseDetails.bodyBytes));
+    final JsonMap dataCombined = {};
+    dataCombined.addAll(data);
+    dataCombined.addAll(dataDetails);
+    
+    return Device.fromJson(dataCombined);
   }
 
   Future<DeviceToken> addDevice(String token, String name, DeviceType deviceType) async {

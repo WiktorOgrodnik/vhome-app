@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:vhome_frontend/devices_page/widgets/thermometer_content.dart';
+import 'package:vhome_frontend/thermometer_details/view/view.dart';
 import 'package:vhome_repository/vhome_repository.dart';
 
 class DeviceTile extends StatelessWidget {
@@ -64,7 +65,10 @@ class DeviceTile extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.all(8),
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () =>
+                            Navigator.of(context).push(
+                              ThermometerDetailsPage.route(device as Thermometer) 
+                            ),
                           child: const Center(
                             child: Text("More..."),
                           ),

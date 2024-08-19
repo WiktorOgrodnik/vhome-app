@@ -18,10 +18,10 @@ Map<String, dynamic> _$DeviceTokenToJson(DeviceToken instance) =>
 Thermometer _$ThermometerFromJson(Map<String, dynamic> json) => Thermometer(
       id: (json['id'] as num).toInt(),
       name: json['name'] as String,
+      lastUpdated: DateTime.parse(json['last_updated'] as String),
       deviceType: $enumDecodeNullable(_$DeviceTypeEnumMap, json['dev_t']) ??
           DeviceType.thermometer,
       lastTemperature: (json['last_temp'] as num?)?.toDouble(),
-      lastUpdated: DateTime.parse(json['last_updated'] as String),
       lastHumidity: (json['last_humidity'] as num?)?.toDouble(),
     );
 
@@ -30,9 +30,9 @@ Map<String, dynamic> _$ThermometerToJson(Thermometer instance) =>
       'id': instance.id,
       'name': instance.name,
       'dev_t': _$DeviceTypeEnumMap[instance.deviceType]!,
+      'last_updated': instance.lastUpdated.toIso8601String(),
       'last_temp': instance.lastTemperature,
       'last_humidity': instance.lastHumidity,
-      'last_updated': instance.lastUpdated.toIso8601String(),
     };
 
 const _$DeviceTypeEnumMap = {
