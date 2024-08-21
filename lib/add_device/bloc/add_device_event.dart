@@ -7,7 +7,6 @@ sealed class AddDeviceEvent extends Equatable {
   List<Object> get props => [];
 }
 
-
 final class AddDeviceNameChanged extends AddDeviceEvent {
   const AddDeviceNameChanged({required this.name});
   final String name;

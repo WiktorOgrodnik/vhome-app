@@ -212,6 +212,10 @@ class VhomeRepository {
     => _deviceApi.getDevice(_authStateController.token, deviceId);
   Future<DeviceToken> addDevice(String name, DeviceType type)
     => _deviceApi.addDevice(_authStateController.token, name, type);
+  Future<void> editDevice(int deviceId, String name)
+    => _deviceApi.edit(_authStateController.token, deviceId, name);
+  Future<void> deleteDevice(int deviceId)
+    => _deviceApi.delete(_authStateController.token, deviceId);
 
   // Measurements
   Future<List<Measurement>> getMeasurements(int deviceId, MeasurementTimeRange timeRange)

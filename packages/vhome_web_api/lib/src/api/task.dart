@@ -161,13 +161,11 @@ class TaskApi {
   }
 
   Future<void> delete(String token, Task task) async {
-    print(task);
     final uri = Uri.parse("$apiUrl/task/${task.id}");
 
     final response = await http.delete(uri, headers: {'Authorization': token});
 
     if (response.statusCode != HttpStatus.ok) {
-      print(response.statusCode);
       throw Exception("Can not deleted the task");
     }
 

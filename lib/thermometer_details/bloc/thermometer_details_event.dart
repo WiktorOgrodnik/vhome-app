@@ -12,7 +12,12 @@ final class ThermometerSubscriptionRequested extends ThermometerDetailsEvent {
 }
 
 final class MeasurementsRequested extends ThermometerDetailsEvent {
-  const MeasurementsRequested();
+  const MeasurementsRequested(this.timeRange);
+
+  final MeasurementTimeRange timeRange;
+
+  @override
+  List<Object> get props => [timeRange];
 }
 
 final class ThermometerRefreshed extends ThermometerDetailsEvent {

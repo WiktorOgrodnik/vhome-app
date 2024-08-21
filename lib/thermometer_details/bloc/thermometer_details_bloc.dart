@@ -45,7 +45,7 @@ class ThermometerDetailsBloc extends Bloc<ThermometerDetailsEvent, ThermometerDe
     emit(state.copyWith(measurementsStatus: () => MeasurementsStatus.loading));
     
     try {
-      final measurements = await _repository.getMeasurements(state.thermometer.id, MeasurementTimeRange.week);
+      final measurements = await _repository.getMeasurements(state.thermometer.id, event.timeRange);
       emit(
         state.copyWith(
           measurementsStatus: () => MeasurementsStatus.success,
@@ -68,6 +68,7 @@ class ThermometerDetailsBloc extends Bloc<ThermometerDetailsEvent, ThermometerDe
     ThermometerDeleted event,
     Emitter<ThermometerDetailsState> emit,
   ) async {
-    emit(state);
+    await _repository.deleteDevice(state.thermometer.id);
+    emit(state.copyWith(status: () => ThermometerDetailsStatus.deleted));
   }
 }

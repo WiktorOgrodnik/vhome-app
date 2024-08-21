@@ -15,16 +15,19 @@ enum AddDeviceTypeLabel {
 }
 
 class AddDevicePage extends StatelessWidget {
-  const AddDevicePage({super.key});
+  const AddDevicePage({super.key, this.device});
 
-  static Route<void> route() {
+  final Device? device;
+
+  static Route<void> route({Device? device}) {
     return MaterialPageRoute(
       fullscreenDialog: true,
       builder: (context) => BlocProvider(
         create: (context) => AddDeviceBloc(
-          repository: context.read<VhomeRepository>()
+          repository: context.read<VhomeRepository>(),
+          device: device,
         ),
-        child: const AddDevicePage(),
+        child: AddDevicePage(device: device),
       ),
     );
   }
@@ -38,7 +41,6 @@ class AddDevicePage extends StatelessWidget {
             previous.status != current.status &&
             current.status == AddDeviceStatus.exit,
           listener: (context, state) => Navigator.of(context).pop(),
-          child: const AddDeviceView(),
         ),
         BlocListener<AddDeviceBloc, AddDeviceState>(
           listenWhen: (previous, current) =>
@@ -53,7 +55,6 @@ class AddDevicePage extends StatelessWidget {
                 ),
               );
           },
-          child: const AddDeviceView(),
         )
       ],
       child: BlocBuilder<AddDeviceBloc, AddDeviceState>(
@@ -62,7 +63,7 @@ class AddDevicePage extends StatelessWidget {
             case AddDeviceStatus.displayToken:
               return const AddDeviceTokenPage();
             default:
-              return const AddDeviceView();
+              return AddDeviceView(device: device);
           }
         },
       ),
@@ -71,13 +72,17 @@ class AddDevicePage extends StatelessWidget {
 }
 
 class AddDeviceView extends StatelessWidget {
-  const AddDeviceView({super.key});
+  AddDeviceView({super.key, this.device});
+
+  final Device? device;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add device"),
+        title: device == null
+        ? Text("Add device")
+        : Text("Edit ${device?.name} device"),
       ),
       body: Container(
         alignment: Alignment.topCenter,
@@ -89,13 +94,14 @@ class AddDeviceView extends StatelessWidget {
                 padding: EdgeInsets.all(20),
                 child: Column(
                   children: [
-                    _NameField(),
+                    _NameField(initialValue: device?.name),
+                    if (device == null)
                     Padding(
                       padding: EdgeInsets.symmetric(vertical: 10),
                       child: _DeviceTypeSelector(),
                     ),
                     SizedBox(height: 25),
-                    _AcceptButton(),
+                    _AcceptButton(editing: device != null),
                   ]
                 ),
               ),
@@ -108,7 +114,9 @@ class AddDeviceView extends StatelessWidget {
 }
 
 class _NameField extends StatelessWidget {
-  const _NameField();
+  _NameField({this.initialValue});
+
+  final String? initialValue;
 
   @override
   Widget build(BuildContext context) {
@@ -116,6 +124,7 @@ class _NameField extends StatelessWidget {
       buildWhen: (previous, current) => previous.formStatus != current.formStatus,
       builder: (context, state) {
         return StandardFormField(
+          initialValue: initialValue,
           hintText: "Device name",
           onChanged: (value) =>
             context
@@ -162,7 +171,9 @@ class _DeviceTypeSelector extends StatelessWidget {
 }
 
 class _AcceptButton extends StatelessWidget {
-  const _AcceptButton();
+  const _AcceptButton({this.editing = false});
+
+  final bool editing;
 
   @override
   Widget build(BuildContext context) {
@@ -171,10 +182,12 @@ class _AcceptButton extends StatelessWidget {
     return state.formStatus.isInProgress
         ? const CircularProgressIndicator()
         : ConfirmButton(
-            onPressed: state.isValid 
+            onPressed: state.isValid || editing 
               ? () => context.read<AddDeviceBloc>().add(const AddDeviceSubmitted())
               : null,
-            child: Text("Add"),
+            child: editing 
+              ? Text("Edit")
+              : Text("Add"),
           );
   }
 }

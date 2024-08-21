@@ -10,7 +10,12 @@ part 'add_device_state.dart';
 class AddDeviceBloc extends Bloc<AddDeviceEvent, AddDeviceState> {
   AddDeviceBloc({
     required VhomeRepository repository,
-  }) : _repository = repository, super(AddDeviceState()) {
+    Device? device
+  }) : _repository = repository, super(AddDeviceState(
+    id: device?.id ?? 0,
+    name: device != null ? DeviceName.dirty(device.name) : DeviceName.pure(),
+    edit: device != null,
+  )) {
     on<AddDeviceSubmitted>(_onSubmitted);
     on<AddDeviceNameChanged>(_onNameChanged);
     on<AddDeviceTypeSelected>(_onTypeSelected);
@@ -43,9 +48,7 @@ class AddDeviceBloc extends Bloc<AddDeviceEvent, AddDeviceState> {
         isValid: Formz.validate([state.name, deviceType]),
       )
     );
-
   }
-
 
   Future<void> _onSubmitted(
     AddDeviceSubmitted event,
@@ -55,13 +58,23 @@ class AddDeviceBloc extends Bloc<AddDeviceEvent, AddDeviceState> {
     final name = state.name.value;
     final type = state.deviceType.value;
 
+    print(name);
+
     try {
-      final returnedDevice = await _repository.addDevice(name, type);
-      emit(state.copyWith(
-        status: AddDeviceStatus.displayToken,
-        formStatus: FormzSubmissionStatus.success,
-        token: returnedDevice.token)
-      );
+      if (!state.edit) {
+        final returnedDevice = await _repository.addDevice(name, type);
+        emit(state.copyWith(
+          status: AddDeviceStatus.displayToken,
+          formStatus: FormzSubmissionStatus.success,
+          token: returnedDevice.token
+        ));
+      } else {
+        await _repository.editDevice(state.id, name);
+        emit(state.copyWith(
+          status: AddDeviceStatus.exit,
+          formStatus: FormzSubmissionStatus.success,
+        ));
+      }
     } catch (_) {
       emit(state.copyWith(formStatus: FormzSubmissionStatus.failure));
     }

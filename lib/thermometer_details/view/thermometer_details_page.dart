@@ -4,10 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:vhome_frontend/add_device/view/add_device_page.dart';
 import 'package:vhome_frontend/devices_page/widgets/thermometer_content.dart';
 import 'package:vhome_frontend/thermometer_details/bloc/thermometer_details_bloc.dart';
 import 'package:vhome_frontend/widgets/widgets.dart';
 import 'package:vhome_repository/vhome_repository.dart';
+
+enum MeasurementTimeRangeLabel {
+  hour('an hour', MeasurementTimeRange.hour),
+  day('a day', MeasurementTimeRange.day),
+  week('a week', MeasurementTimeRange.week),
+  month('a month', MeasurementTimeRange.month);
+
+  const MeasurementTimeRangeLabel(this.label, this.type);
+  final String label;
+  final MeasurementTimeRange type;
+}
 
 class ThermometerDetailsPage extends StatelessWidget {
   const ThermometerDetailsPage({super.key, required this.thermometer});
@@ -29,7 +41,7 @@ class ThermometerDetailsPage extends StatelessWidget {
         thermometer: thermometer,
       )
         ..add(const ThermometerSubscriptionRequested())
-        ..add(const MeasurementsRequested()),
+        ..add(const MeasurementsRequested(MeasurementTimeRange.week)),
       child: const ThermometerDetailsListener(),
     );
   }
@@ -40,7 +52,13 @@ class ThermometerDetailsListener extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const ThermometerDetailsView();
+    return BlocListener<ThermometerDetailsBloc, ThermometerDetailsState>(
+      listenWhen: (previous, current) =>
+        previous.status != current.status &&
+        current.status == ThermometerDetailsStatus.deleted,
+      listener: (context, state) => Navigator.of(context).pop(),
+      child: const ThermometerDetailsView(),
+    );
   }
 }
 
@@ -49,11 +67,33 @@ class ThermometerDetailsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final display = context.read<VhomeRepository>().display;
+
     return BlocBuilder<ThermometerDetailsBloc, ThermometerDetailsState>(
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
             title: Text("${state.thermometer.name} details"),
+            actions: [
+              if (!display)
+              IconButton(
+                onPressed: () =>
+                  Navigator.of(context).push(
+                    AddDevicePage.route(device: state.thermometer),
+                  ),
+                tooltip: "Edit device",
+                icon: const Icon(Icons.edit),
+              ),
+              if (!display)
+              IconButton(
+                onPressed: () =>
+                  context
+                    .read<ThermometerDetailsBloc>()
+                    .add(ThermometerDeleted()),
+                tooltip: "Delete device",
+                icon: const Icon(Icons.delete),
+              ),
+            ],
           ),
           body: Container(
             alignment: Alignment.topCenter,
@@ -63,7 +103,21 @@ class ThermometerDetailsView extends StatelessWidget {
                 children: [
                   ThermometerContent(thermometer: state.thermometer),
                   const SizedBox(height: 25),
-                  const SectionTitle(child: Text("History")),
+                  const Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16.0),
+                          child: SectionTitle(child: Text("History")),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16.0),
+                          child: _MeasurementTimeRangeDropdownMenu(),
+                        ),
+                      ],
+                    ),
+                  ),
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(25.0),
@@ -128,29 +182,43 @@ class MeasurementChart extends StatelessWidget {
               return const Center(child: Text("No measurements yet."));
             }
 
+            List<Measurement> measurements = state.measurements;
+            measurements.sort((a, b) => a.time.compareTo(b.time));
+
             return SfCartesianChart(
+              legend: Legend(
+                isVisible: true,
+                position: LegendPosition.bottom,
+              ),
               primaryXAxis: DateTimeAxis(
                 dateFormat: DateFormat("yyyy-MM-dd hh:mm:ss"),
               ),
               primaryYAxis: NumericAxis(
-                minimum: state.measurements.where((measurement) => measurement.label == "last_temp").map((measurement) => measurement.value).reduce(min) - 1,
-                maximum: state.measurements.where((measurement) => measurement.label == "last_temp").map((measurement) => measurement.value).reduce(max) + 1,
+                title: AxisTitle(text: "Temperature"),
+                labelFormat: '{value}°C',
+                minimum: measurements.where((measurement) 
+                  => measurement.label == "last_temp").map((measurement) => measurement.value).reduce(min) - 1,
+                maximum: measurements.where((measurement)
+                  => measurement.label == "last_temp").map((measurement) => measurement.value).reduce(max) + 1,
               ),
               axes: [
                 NumericAxis(
                   name: "yAxis",
-                  title: AxisTitle(text: 'Secondary y-axis'),
+                  labelFormat: '{value}%',
+                  title: AxisTitle(text: 'Humidity'),
                   opposedPosition: true,
                 )
               ],
               series: [
                 LineSeries<Measurement, DateTime>(
-                  dataSource: state.measurements.where((measurement) => measurement.label == "last_temp").toList(),
+                  name: "Temperature",
+                  dataSource: measurements.where((measurement) => measurement.label == "last_temp").toList(),
                   xValueMapper: (Measurement m, _) => m.time.toLocal(),
                   yValueMapper: (Measurement m, _) => m.value,
                 ),
                 LineSeries<Measurement, DateTime>(
-                  dataSource: state.measurements.where((measurement) => measurement.label == "last_humidity").toList(),
+                  name: "Humidity",
+                  dataSource: measurements.where((measurement) => measurement.label == "last_humidity").toList(),
                   xValueMapper: (Measurement m, _) => m.time.toLocal(),
                   yValueMapper: (Measurement m, _) => m.value,
                   yAxisName: "yAxis",
@@ -165,3 +233,33 @@ class MeasurementChart extends StatelessWidget {
     );
   }
 }
+
+class _MeasurementTimeRangeDropdownMenu extends StatelessWidget {
+  const _MeasurementTimeRangeDropdownMenu();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ThermometerDetailsBloc, ThermometerDetailsState>(
+      builder: (context, state) {
+        return DropdownMenu<MeasurementTimeRangeLabel>(
+          requestFocusOnTap: true,
+          initialSelection: MeasurementTimeRangeLabel.week,
+          label: const Text('Type'),
+          onSelected: (MeasurementTimeRangeLabel? type) =>
+            context
+              .read<ThermometerDetailsBloc>()
+              .add(MeasurementsRequested(type!.type)),
+          dropdownMenuEntries: MeasurementTimeRangeLabel.values
+            .map<DropdownMenuEntry<MeasurementTimeRangeLabel>>(
+              (MeasurementTimeRangeLabel type) {
+                return DropdownMenuEntry<MeasurementTimeRangeLabel>(
+                  value: type,
+                  label: type.label,
+                );
+              }
+            ).toList(),
+        );
+      }
+    );
+  }    
+}        

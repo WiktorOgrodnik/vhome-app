@@ -120,6 +120,37 @@ class DeviceApi {
     return data; 
   }
 
+  Future<void> edit(String token, int deviceId, String name) async {
+    final uri = Uri.parse("$apiUrl/device/$deviceId");
+    final payload = jsonEncode({ "name": name });
+
+    final response = await http.patch(
+      uri,
+      headers: {
+        'Authorization': token,
+        'content-type': 'application/json',
+      },
+      body: payload
+    );
+
+    if (response.statusCode != HttpStatus.ok) {
+      throw Exception("Can not edit device");
+    }
+
+    _devicesOutdated$.add(null);
+  }
+
+  Future<void> delete(String token, int deviceId) async {
+    final uri = Uri.parse("$apiUrl/device/$deviceId");
+    final response = await http.delete(uri, headers: {'Authorization': token });
+
+    if (response.statusCode != HttpStatus.ok) {
+      throw Exception("Can not deleted device");
+    }
+
+    _devicesOutdated$.add(null);
+  }
+
   void refreshDevices() {
     _devicesOutdated$.add(null);
   }
