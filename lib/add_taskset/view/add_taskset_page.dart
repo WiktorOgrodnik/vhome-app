@@ -7,16 +7,19 @@ import 'package:vhome_frontend/widgets/standard_field.dart';
 import 'package:vhome_repository/vhome_repository.dart';
 
 class AddTasksetPage extends StatelessWidget {
-  const AddTasksetPage({super.key});
+  const AddTasksetPage({super.key, this.taskset});
 
-  static Route<void> route() {
+  final Taskset? taskset;
+
+  static Route<void> route({Taskset? taskset}) {
     return MaterialPageRoute(
       fullscreenDialog: true,
       builder: (context) => BlocProvider(
         create: (context) => AddTasksetBloc(
-          repository: context.read<VhomeRepository>()
+          repository: context.read<VhomeRepository>(),
+          taskset: taskset,
         ),
-        child: const AddTasksetPage(),
+        child: AddTasksetPage(taskset: taskset),
       ),
     );
   }
@@ -45,20 +48,24 @@ class AddTasksetPage extends StatelessWidget {
               )
         ),
       ],
-      child: const AddTasksetView(),
+      child: AddTasksetView(taskset: taskset),
     );
   }
 }
 
 class AddTasksetView extends StatelessWidget {
-  const AddTasksetView({super.key});
+  const AddTasksetView({super.key, this.taskset});
+
+  final Taskset? taskset;
 
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add taskset"),
+        title: taskset == null 
+                ? const Text("Add taskset")
+                : Text("Edit ${taskset!.title}")
       ),
       body: Container(
         alignment: Alignment.topCenter,
@@ -71,9 +78,9 @@ class AddTasksetView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    _NameField(),
+                    _NameField(initialValue: taskset?.title),
                     const SizedBox(height: 25),
-                    _ConfirmButton(),
+                    _ConfirmButton(edit: taskset != null),
                   ]
                 ),
               ),
@@ -86,7 +93,9 @@ class AddTasksetView extends StatelessWidget {
 }
 
 class _NameField extends StatelessWidget {
-  const _NameField();
+  const _NameField({this.initialValue});
+
+  final String? initialValue;
 
   @override
   Widget build(BuildContext context) {
@@ -94,6 +103,7 @@ class _NameField extends StatelessWidget {
       buildWhen: (previous, current) => previous.name != current.name,
       builder: (context, state) {
         return StandardFormField(
+          initialValue: initialValue,
           hintText: "Taskset name",
           onChanged: (value) => context.read<AddTasksetBloc>().add(AddTasksetNameChanged(name: value)),
           errorText: state.name.displayError != null ? 'taskset name can not be empty' : null,
@@ -104,7 +114,9 @@ class _NameField extends StatelessWidget {
 }
 
 class _ConfirmButton extends StatelessWidget {
-  _ConfirmButton();
+  const _ConfirmButton({this.edit = false});
+
+  final bool edit;
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +128,9 @@ class _ConfirmButton extends StatelessWidget {
             onPressed: state.isValid
               ? () => context.read<AddTasksetBloc>().add(const AddTasksetSubmitted())
               : null,
-            child: Text("Add taskset"),
+            child: edit
+              ? Text("Edit taskset")
+              : Text("Add taskset")
           );
   }
 }

@@ -10,7 +10,12 @@ part 'add_taskset_state.dart';
 class AddTasksetBloc extends Bloc<AddTasksetEvent, AddTasksetState> {
   AddTasksetBloc({
     required VhomeRepository repository,
-  }) : _repository = repository, super(AddTasksetState()) {
+    Taskset? taskset,
+  }) : _repository = repository, super(AddTasksetState(
+    id: taskset?.id ?? 0,
+    name: taskset != null ? Name.dirty(taskset.title) : const Name.pure(),
+    edit: taskset != null,
+  )) {
     on<AddTasksetSubmitted>(_onSubmitted);
     on<AddTasksetNameChanged>(_onNameChanged);
   }
@@ -37,7 +42,14 @@ class AddTasksetBloc extends Bloc<AddTasksetEvent, AddTasksetState> {
     if (state.isValid) {
       emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
       try {
-        await _repository.addTaskset(state.name.value);
+
+        if (state.edit) {
+          final taskset = Taskset(id: state.id, title: state.name.value);
+          await _repository.editTaskset(taskset);
+        } else {
+          await _repository.addTaskset(state.name.value);
+        }
+
         emit(state.copyWith(status: FormzSubmissionStatus.success));
       } catch (_) {
         emit(state.copyWith(status: FormzSubmissionStatus.failure));

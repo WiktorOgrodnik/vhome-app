@@ -7,7 +7,6 @@ sealed class AddTasksetEvent extends Equatable {
   List<Object> get props => [];
 }
 
-
 final class AddTasksetNameChanged extends AddTasksetEvent {
   const AddTasksetNameChanged({required this.name});
   final String name;

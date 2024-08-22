@@ -182,6 +182,10 @@ class VhomeRepository {
     => _tasksetApi.getTasksets(_authStateController.token);
   Future<void> addTaskset(String name)
     => _tasksetApi.addTaskset(_authStateController.token, name);
+  Future<void> editTaskset(Taskset taskset) async {
+    await _tasksetApi.editTaskset(_authStateController.token, taskset);
+    refreshTasks();
+  }
   Future<void> deleteTaskset(Taskset taskset)
     => _tasksetApi.deleteTaskset(_authStateController.token, taskset);
 

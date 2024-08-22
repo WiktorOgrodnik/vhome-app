@@ -34,7 +34,7 @@ class TasksetApi {
       throw Exception('Can not get the Tasksets');
     }
 
-    final List<dynamic> responseData = jsonDecode(response.body);
+    final List<dynamic> responseData = jsonDecode(utf8.decode(response.bodyBytes));
     final List<Taskset> fetchedTaskSets = responseData.map((taskset) => Taskset.fromJson(taskset)).toList();
 
     return fetchedTaskSets; 
@@ -61,12 +61,32 @@ class TasksetApi {
     _tasksetOutdated$.add(null);
   }
 
+  Future<void> editTaskset(String token, Taskset taskset) async {
+    final uri = Uri.parse("$apiUrl/taskset/${taskset.id}");
+    final payload = jsonEncode({ "name": taskset.title });
+
+    final response = await http.patch(
+      uri,
+      headers: {
+        'Authorization': token,
+        'content-type': 'application/json',
+      },
+      body: payload
+    );
+
+    if (response.statusCode != HttpStatus.ok) {
+      throw Exception("Can not edit taskset");
+    }
+
+    _tasksetOutdated$.add(null);
+  }
+
   Future<void> deleteTaskset(String token, Taskset taskset) async {
     final uri = Uri.parse("$apiUrl/taskset/${taskset.id}");
     final response = await http.delete(uri, headers: { 'Authorization': token });
 
     if (response.statusCode != HttpStatus.ok) {
-      throw Exception("g");
+      throw Exception("Can not delete taskset");
     }
 
     _tasksetOutdated$.add(null);

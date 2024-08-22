@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vhome_frontend/add_taskset/view/view.dart';
 import 'package:vhome_frontend/taskset_details/taskset_details.dart';
 import 'package:vhome_frontend/users/bloc/users_bloc.dart';
 import 'package:vhome_repository/vhome_repository.dart';
@@ -65,11 +66,19 @@ class TasksetDetailsView extends StatelessWidget {
         actions: [
           if (!display)
           IconButton(
-            onPressed: () {
+            onPressed: () =>
+              Navigator.of(context).push(
+                AddTasksetPage.route(taskset: taskset)
+              ),
+            tooltip: "Edit taskset",
+            icon: const Icon(Icons.edit),
+          ),
+          if (!display)
+          IconButton(
+            onPressed: () =>
               context
                 .read<TasksetDetailsBloc>()
-                .add(TasksetDeleted(taskset: taskset));
-            },
+                .add(TasksetDeleted(taskset: taskset)),
             tooltip: "Delete taskset",
             icon: const Icon(Icons.delete),
           ),
