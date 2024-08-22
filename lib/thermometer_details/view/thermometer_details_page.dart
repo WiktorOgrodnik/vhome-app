@@ -40,8 +40,8 @@ class ThermometerDetailsPage extends StatelessWidget {
         repository: context.read<VhomeRepository>(),
         thermometer: thermometer,
       )
-        ..add(const ThermometerSubscriptionRequested())
-        ..add(const MeasurementsRequested(MeasurementTimeRange.week)),
+        ..add(const MeasurementsRequested(MeasurementTimeRange.week))
+        ..add(const ThermometerSubscriptionRequested()),
       child: const ThermometerDetailsListener(),
     );
   }

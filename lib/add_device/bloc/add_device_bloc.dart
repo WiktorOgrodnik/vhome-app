@@ -58,8 +58,6 @@ class AddDeviceBloc extends Bloc<AddDeviceEvent, AddDeviceState> {
     final name = state.name.value;
     final type = state.deviceType.value;
 
-    print(name);
-
     try {
       if (!state.edit) {
         final returnedDevice = await _repository.addDevice(name, type);
