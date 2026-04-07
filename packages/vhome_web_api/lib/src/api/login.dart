@@ -95,6 +95,7 @@ class AuthApi {
     final response = await get(uri);
 
     if (response.statusCode != HttpStatus.ok) {
+      print(response.statusCode);
       throw Exception("Can not get pairing code");
     }
     
